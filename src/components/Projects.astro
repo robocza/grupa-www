@@ -1,0 +1,55 @@
+---
+import Badge from "./Badge.astro";
+import SectionHeader from "./SectionHeader.astro";
+
+const projects = [
+    {
+        title: "Minimum Viable Utopia",
+        description: "Społeczność skupiona wokół wyzwań współczesności i eksperymentów",
+        logo: "/assets/projects/mvu.png",
+        url: "https://mvu.pl"
+    },
+    {
+        title: "Eden Learning Garden",
+        description: "Seria wydarzeń i interdyscyplinarnych seminariów",
+        logo: "/assets/projects/eden.png",
+        url: "https://eden.mvu.pl"
+    },
+    {
+        title: "Odzież Robocza",
+        description: "Ubrania robocze nowej generacji.",
+        logo: "/assets/projects/or.png",
+        url: "https://odziez.robocza.org",
+        badge: "New!"
+    },
+    {
+        title: "Instytut Nowego Internetu",
+        description: "Post-platforma edukacyjna",
+        logo: "/assets/projects/ini.png",
+        url: "https://ini.edu.pl",
+        badge: "Coming soon"
+    },
+];
+---
+<div class="my-20">
+    <SectionHeader>
+        <Fragment slot="title">Nasze projekty</Fragment>
+    </SectionHeader>
+</div>
+<div class="grid xl:grid-cols-4 sm:grid-cols-2 mt-32 gap-6 mb-24">
+    {
+        projects.map((item) => (
+                <div class="border-black border-2 text-center relative p-2 flex">
+                    {item.badge && <Badge><Fragment slot="title">{item.badge}</Fragment></Badge>}
+                    <div class="grid place-items-center grow grid-rows-2">
+                        <div class="self-center mt-8">
+                            <a href={item.url}>
+                                <img src={item.logo} alt={item.title}/>
+                            </a>
+                        </div>
+                        <div class="self-center text-xl text-center">{item.description}</div>
+                    </div>
+                </div>
+        ))
+    }
+</div>

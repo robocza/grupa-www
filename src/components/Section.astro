@@ -1,0 +1,12 @@
+---
+import SectionHeader from "./SectionHeader.astro";
+import Paragraph from "./Paragraph.astro";
+---
+<div class="mt-16">
+  <SectionHeader>
+    <Fragment slot="title"><slot name="title"/></Fragment>
+  </SectionHeader>
+  <Paragraph>
+    <Fragment slot="text"><slot name="desc"/></Fragment>
+  </Paragraph>
+</div>

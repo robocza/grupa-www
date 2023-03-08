@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  node:
+    container_name: grupa-www-node
+    build:
+      context: .docker/node
+    ports:
+      - "80:80"
+      - "3000:3000"
+    volumes:
+      - ./:/app
+    networks:
+      grupa-www-network:
+        ipv4_address: 10.10.66.2
+    stdin_open: true 
+    tty: true
+    command: tail -f /dev/null
+
+networks:
+  grupa-www-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.66.0/24

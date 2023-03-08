@@ -1,0 +1,7 @@
+---
+const { email, className } = Astro.props;
+const link = 'mailto:' + email;
+---
+<a class={className} href={link}>
+  {email}
+</a>
