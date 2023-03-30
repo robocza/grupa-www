@@ -18,5 +18,5 @@ yarn install
 
 Run project (inside docker)
 ```bash
- yarn dev
+yarn dev
 ```
