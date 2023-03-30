@@ -7,6 +7,10 @@ module.exports = {
       fontFamily: {
         sans: ['GT America Regular', ...defaultTheme.fontFamily.sans],
       },
+      fontSize: {
+        '3xl': ['2rem', '2.75rem'],
+        '4xl': ['2.5rem', '3.2rem']
+      }
     },
   },
   plugins: [require('@tailwindcss/typography')],

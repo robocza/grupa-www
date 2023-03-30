@@ -12,30 +12,25 @@ const teamMembers = await Astro.glob('./../content/team/*.md');
         <Fragment slot="title">Zespół</Fragment>
     </SectionHeader>
 
-    <div class="grid grid-cols-2 gap-6 mt-20">
+    <div class="grid grid-cols-4 gap-4 mt-12">
         {
             teamMembers.map((teamMemberEntry) => (
-                <div class=" border-2 border-black">
-                    <div class="">
-                        <div class="p-12">
-                            <div class="float-right -mr-12 -mt-12 mb-12 max-w-xs">
-                                <img src={teamMemberEntry.frontmatter.picture}
-                                     alt={teamMemberEntry.frontmatter.name}/>
-                            </div>
-                            <h2 class="text-4xl leading-normal">
-                                {teamMemberEntry.frontmatter.name}
-                            </h2>
-                            <h3 class="text-3xl leading-normal">
-                                {teamMemberEntry.frontmatter.title}
-                            </h3>
-                            <br>
-                            <br>
-                            <MailLink email={teamMemberEntry.frontmatter.email}
-                                      className="text-2xl underline break-all"/>
-                        </div>
-                        <div class="m-12 text-2xl leading-normal clear-both">
-                            <teamMemberEntry.Content/>
-                        </div>
+                <div class="mb-12">
+                    <img class="border-4 border-black" src={teamMemberEntry.frontmatter.picture}
+                         alt={teamMemberEntry.frontmatter.name}/>
+                    <h2 class="text-4xl leading-normal">
+                        {teamMemberEntry.frontmatter.name}
+                    </h2>
+                    <h3 class="text-2xl uppercase leading-normal">
+                        {teamMemberEntry.frontmatter.title}
+                    </h3>
+                    <br>
+                    <MailLink email={teamMemberEntry.frontmatter.email}
+                              className="text-2xl underline hover:text-white hover:bg-black break-all"/>
+                    <br>
+                    <br>
+                    <div class="text-2xl leading-normal">
+                        <teamMemberEntry.Content/>
                     </div>
                 </div>
             ))

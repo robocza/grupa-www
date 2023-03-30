@@ -1,23 +1,26 @@
 ---
 import Container from "@components/Container.astro";
+import MailLink from "./MailLink.astro"
 ---
 <footer class="mt-10 py-10 bg-black text-white">
     <Container>
         <div class="my-8 flex w-full justify-between">
             <div>
-                <img src="/assets/logo-white.png" alt="Grupa Robocza"/>
+                <a href="/">
+                    <img src="/assets/logo-white.svg" alt="Grupa Robocza"/>
+                </a>
                 <p class="text-xl mt-8">
-                    <a href="mailto:grupa@robocza.org">grupa@robocza.org</a>
+                    <MailLink email="grupa@robocza.org" className="underline hover:text-black hover:bg-white"/>
                 </p>
                 <p class="text-xl mt-8">
                     ul. Wilhelma Feldmana 4/3<br>
                     31-130 Kraków
                 </p>
             </div>
-            <div class="text-right">
-                <p class="text-xl mt-8"><a href="https://pl.linkedin.com/company/grupa-robocza">LinkedIn</a></p>
-                <p class="text-xl mt-8"><a href="https://www.instagram.com/grupa.robocza/">Instagram</a></p>
-                <p class="text-xl mt-8">Worldwide 🌏 {new Date().getFullYear()}</p>
+            <div class="text-right place-self-end">
+                <p class="text-xl mt-4"><a href="https://pl.linkedin.com/company/grupa-robocza" class="underline hover:text-black hover:bg-white">LinkedIn</a></p>
+                <p class="text-xl mt-4"><a href="https://www.instagram.com/grupa.robocza/" class="underline hover:text-black hover:bg-white">Instagram</a></p>
+                <p class="text-xl mt-4">Worldwide 🌏 {new Date().getFullYear()}</p>
             </div>
         </div>
     </Container>

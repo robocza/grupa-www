@@ -6,48 +6,54 @@ const projects = [
     {
         title: "Minimum Viable Utopia",
         description: "Społeczność skupiona wokół wyzwań współczesności, corocznej Wyprawy Roboczej i różnych projektowych eksperymentów",
-        logo: "/assets/projects/mvu.png",
-        url: "https://mvu.pl"
+        logo: "/assets/projects/mvu.svg",
+        url: "https://mvu.pl",
+        badge: null
     },
     {
         title: "Eden Learning Garden",
         description: "Cykl meetupów poruszająch różne aspekty nowoczesnych technologii",
-        logo: "/assets/projects/eden.png",
-        url: "https://eden.mvu.pl"
+        logo: "/assets/projects/eden.svg",
+        url: "https://eden.mvu.pl",
+        badge: null
     },
     {
         title: "Odzież Robocza",
         description: "Ubrania robocze nowej generacji",
-        logo: "/assets/projects/or.png",
-        url: "https://odziez.robocza.org",
-        badge: "New!"
+        logo: "/assets/projects/or.svg",
+        url: "https://odziez.robocza.svg",
+        badge: {
+            bg: "bg-[#ff6651]",
+        }
     },
     {
         title: "Instytut Nowego Internetu",
         description: "Post-platforma edukacyjna",
-        logo: "/assets/projects/ini.png",
+        logo: "/assets/projects/ini.svg",
         url: "https://ini.edu.pl",
-        badge: "Coming soon"
+        badge: {
+            bg: "bg-[#51b6ff]",
+        }
     },
 ];
 ---
-<div class="my-20">
+<div class="my-12">
     <SectionHeader>
         <Fragment slot="title">Nasze projekty</Fragment>
     </SectionHeader>
 </div>
-<div class="grid xl:grid-cols-4 sm:grid-cols-2 mt-32 gap-6 mb-24">
+<div class="grid xl:grid-cols-4 sm:grid-cols-2 mt-16 mb-8 gap-4">
     {
         projects.map((item) => (
-                <div class="border-black border-2 text-center relative p-2 flex">
-                    {item.badge && <Badge><Fragment slot="title">{item.badge}</Fragment></Badge>}
+                <div class="text-center relative p-2 flex">
+                    {item.badge && <Badge bg={item.badge.bg}></Badge>}
                     <div class="grid place-items-center grow grid-rows-2">
                         <div class="self-center mt-8">
                             <a href={item.url}>
                                 <img src={item.logo} alt={item.title}/>
                             </a>
                         </div>
-                        <div class="self-center text-xl text-center">{item.description}</div>
+                        <a class="self-center text-xl text-center underline" href={item.url}>{item.description}</a>
                     </div>
                 </div>
         ))

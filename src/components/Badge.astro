@@ -1,3 +1,5 @@
-<div class="text-xl w-36 border-black border-dashed border-4 p-2 -rotate-[30deg] inline-block absolute -left-4 -top-4">
-  <slot name="title"/>
-</div>
+---
+const {bg, text} = Astro.props;
+const className = "rounded-full w-28 h-28 inline-block absolute right-0 top-0 bg-[url('/assets/badge/coming-soon.png')] bg-no-repeat bg-center " + bg;
+---
+<div class={className}></div>
