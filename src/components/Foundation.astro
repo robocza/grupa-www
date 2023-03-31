@@ -1,6 +1,7 @@
 ---
 import Section from "./Section.astro";
 import Spacer from "./Spacer.astro";
+import Link from "./Link.astro";
 ---
 <div id="foundation">
     <Section>
@@ -9,7 +10,10 @@ import Spacer from "./Spacer.astro";
     </Section>
     <div class="flex justify-between mt-6">
         <div>
-            <img class="max-h-5 inline-block align-middle" src="/assets/icons/pdf.png" alt="pdf"><a class="inline-block align-middle underline" href="/files/Grupa_Robocza_statut_2022.pdf">Statut Fundacji (7,87 MB)</a>
+            <img class="max-h-5 inline-block align-middle" src="/assets/icons/pdf.png" alt="pdf">
+            <Link url="/files/Grupa_Robocza_statut_2022.pdf"
+                  text="Statut Fundacji (7,87 MB)"
+                  className="inline-block align-middle underline hover:text-white hover:bg-black"/>
         </div>
     </div>
     <Spacer/>

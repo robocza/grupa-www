@@ -12,13 +12,13 @@ const teamMembers = await Astro.glob('./../content/team/*.md');
         <Fragment slot="title">Zespół</Fragment>
     </SectionHeader>
 
-    <div class="grid grid-cols-4 gap-4 mt-12">
+    <div class="grid grid-cols-4 gap-6 mt-12">
         {
             teamMembers.map((teamMemberEntry) => (
                 <div class="mb-12">
                     <img class="border-4 border-black" src={teamMemberEntry.frontmatter.picture}
                          alt={teamMemberEntry.frontmatter.name}/>
-                    <h2 class="text-4xl leading-normal">
+                    <h2 class="text-3xl leading-normal">
                         {teamMemberEntry.frontmatter.name}
                     </h2>
                     <h3 class="text-2xl uppercase leading-normal">
@@ -26,10 +26,10 @@ const teamMembers = await Astro.glob('./../content/team/*.md');
                     </h3>
                     <br>
                     <MailLink email={teamMemberEntry.frontmatter.email}
-                              className="text-2xl underline hover:text-white hover:bg-black break-all"/>
+                              className="text-xl underline hover:text-white hover:bg-black break-all"/>
                     <br>
                     <br>
-                    <div class="text-2xl leading-normal">
+                    <div class="text-xl leading-normal">
                         <teamMemberEntry.Content/>
                     </div>
                 </div>

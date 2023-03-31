@@ -1,0 +1,10 @@
+---
+interface Props {
+    url: string;
+    text: string;
+    className?: string
+}
+
+const {url, text, className = "underline hover:text-white hover:bg-black"} = Astro.props;
+---
+<a class={className} href={url}>{text}</a>

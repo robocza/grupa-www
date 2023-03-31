@@ -4,6 +4,7 @@ import Container from "@components/Container.astro";
 import Team from "@components/Team.astro";
 import Foundation from "@components/Foundation.astro";
 import Lead from "@components/Lead.astro";
+import Link from "../components/Link.astro";
 ---
 <Layout title="About">
   <Container>
@@ -12,7 +13,7 @@ import Lead from "@components/Lead.astro";
         Jako Grupa Robocza działamy od 2018.
         Łączy nas planetocentryczne spojrzenie na technologię oraz pasja eksperymentowania.
         Nasze kompetencje pozwalają na zbudowanie innowacyjnego produktu end-to-end.
-        Od 2021 jesteśmy <a href="#foundation" class="underline">↓Fundacją</a>.
+        Od 2021 jesteśmy <Link url="#foundation" text="↓Fundacją"/>.
       </Fragment>
     </Lead>
     <Team />

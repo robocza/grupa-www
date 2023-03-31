@@ -1,7 +1,12 @@
 ---
+import Link from "./Link.astro";
+
+interface Props {
+    email: string;
+    className?: string
+}
+
 const { email, className } = Astro.props;
-const link = 'mailto:' + email;
+const url = 'mailto:' + email;
 ---
-<a class={className} href={link}>
-  {email}
-</a>
+<Link url={url} text={email} className={className} />

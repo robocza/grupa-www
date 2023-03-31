@@ -1,6 +1,7 @@
 ---
 import Container from "@components/Container.astro";
 import MailLink from "./MailLink.astro"
+import Link from "./Link.astro";
 ---
 <footer class="mt-10 py-10 bg-black text-white">
     <Container>
@@ -18,8 +19,8 @@ import MailLink from "./MailLink.astro"
                 </p>
             </div>
             <div class="text-right place-self-end">
-                <p class="text-xl mt-4"><a href="https://pl.linkedin.com/company/grupa-robocza" class="underline hover:text-black hover:bg-white">LinkedIn</a></p>
-                <p class="text-xl mt-4"><a href="https://www.instagram.com/grupa.robocza/" class="underline hover:text-black hover:bg-white">Instagram</a></p>
+                <p class="text-xl mt-4"><Link url="https://pl.linkedin.com/company/grupa-robocza" text="LinkedIn" className="underline hover:text-black hover:bg-white"/></p>
+                <p class="text-xl mt-4"><Link url="https://www.instagram.com/grupa.robocza/" text="Instagram" className="underline hover:text-black hover:bg-white"/></p>
                 <p class="text-xl mt-4">Worldwide 🌏 {new Date().getFullYear()}</p>
             </div>
         </div>
