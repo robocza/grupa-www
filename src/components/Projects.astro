@@ -38,23 +38,23 @@ const projects = [
     },
 ];
 ---
-<div class="my-12">
+<div class="my-6 md:my-12">
     <SectionHeader>
         <Fragment slot="title">Nasze projekty</Fragment>
     </SectionHeader>
 </div>
-<div class="grid xl:grid-cols-4 sm:grid-cols-2 mt-16 mb-8 gap-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 sm:gap-4 xl:gap-6 mt-8 mb-4 md:mt-16 md:mb-8">
     {
         projects.map((item) => (
                 <div class="text-center relative p-4 flex">
                     {item.badge && <Badge bg={item.badge.bg}></Badge>}
                     <div class="grid place-items-center grow grid-rows-2">
-                        <div class="self-center mt-8 px-4">
+                        <div class="self-center mt-4 md:mt-8 px-4">
                             <a href={item.url}>
                                 <img src={item.logo} alt={item.title}/>
                             </a>
                         </div>
-                        <div class="mt-8 self-start text-xl text-center">
+                        <div class="mt-4 md:mt-8 self-start text-xl text-center">
                             <Link url={item.url} text={item.description} />
                         </div>
                     </div>

@@ -5,7 +5,7 @@ import Link from "./Link.astro";
 ---
 <footer class="mt-10 py-10 bg-black text-white">
     <Container>
-        <div class="my-8 flex w-full justify-between">
+        <div class="my-8 flex flex-col sm:flex-row w-full sm:justify-between">
             <div>
                 <a href="/">
                     <img src="/assets/logo-white.svg" alt="Grupa Robocza"/>
@@ -18,7 +18,7 @@ import Link from "./Link.astro";
                     31-130 Kraków
                 </p>
             </div>
-            <div class="text-right place-self-end">
+            <div class="sm:text-right sm:place-self-end">
                 <p class="text-xl mt-4"><Link url="https://pl.linkedin.com/company/grupa-robocza" text="LinkedIn" className="underline hover:text-black hover:bg-white"/></p>
                 <p class="text-xl mt-4"><Link url="https://www.instagram.com/grupa.robocza/" text="Instagram" className="underline hover:text-black hover:bg-white"/></p>
                 <p class="text-xl mt-4">Worldwide 🌏 {new Date().getFullYear()}</p>
