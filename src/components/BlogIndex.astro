@@ -1,0 +1,15 @@
+---
+import {getCollection} from 'astro:content';
+import SectionHeader from "./SectionHeader.astro";
+
+const blogEntries = await getCollection('blog');
+---
+<div class="my-16">
+    <ul>
+        {blogEntries.map(blogPostEntry => (
+                <li>
+                    <a href={`/blog/${blogPostEntry.slug}`}>{blogPostEntry.data.title}</a>
+                </li>
+        ))}
+    </ul>
+</div>
