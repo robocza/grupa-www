@@ -13,12 +13,12 @@
   },
   "dependencies": {
     "@astrojs/tailwind": "^5.1.0",
-    "astro": "^4.10.2",
+    "astro": "^4.11.3",
+    "sharp": "^0.33.4",
     "tailwindcss": "^3.4.4"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.13",
-    "sharp": "^0.33.4"
+    "@tailwindcss/typography": "^0.5.13"
   },
   "engines": {
     "node": "^20.11.0"
