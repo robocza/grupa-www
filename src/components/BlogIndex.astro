@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import {getCollection} from 'astro:content';
 import SectionHeader from "./SectionHeader.astro";
 
@@ -7,9 +8,12 @@ const blogEntries = await getCollection('blog');
 <div class="my-16">
     <ul>
         {blogEntries.map(blogPostEntry => (
-                <li>
-                    <a href={`/blog/${blogPostEntry.slug}`}>{blogPostEntry.data.title}</a>
-                </li>
+            <li>
+                <a href={`/blog/${blogPostEntry.slug}`}>
+                    <Image src={blogPostEntry.data.cover??'/assets/team/czarek.png'} alt={blogPostEntry.data.coverAlt??''} width="250" height="250" />
+                    <h2>{blogPostEntry.data.title}</h2>
+                </a>
+            </li>
         ))}
     </ul>
 </div>

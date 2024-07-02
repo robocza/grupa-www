@@ -59,3 +59,9 @@ git-sync: ## Sync git submodules
 	git add src/content/blog
 	git commit -m "Update blog"
 	git push
+
+build-dev:
+    yarn dev
+
+build:
+    yarn build
