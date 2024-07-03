@@ -53,15 +53,18 @@ docker-sh-node: ## Connect to the node container
 	@$(NODE_CONT) fish
 
 ## —— Build ————————————————————————————————————————————————————————————————————————————————————————————————————————
-
-git-sync: ## Sync git submodules
+git-submodule-pull: ## Pull git submodules changes
 	git submodule update --remote --merge
 	git add src/content/blog
+
+git-submodule-push: ## Push git submodules changes
 	git commit -m "Update blog"
 	git push
 
+git-submodule-sync: git-submodule-pull git-submodule-push
+
 build-dev:
-    yarn dev
+	yarn dev
 
 build:
-    yarn build
+	yarn build
