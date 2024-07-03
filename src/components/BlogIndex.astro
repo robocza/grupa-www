@@ -1,30 +1,32 @@
 ---
 import { Image } from 'astro:assets';
 import {getCollection} from 'astro:content';
+import placeholderCoverImageUrl from '../assets/blog-placeholder.png';
 
 const blogEntries = await getCollection('blog', ({ data }) => {
     return data.publish === true;
 });
 
 ---
-<div class="my-16">
-    <ul>
-        {blogEntries.map(blogPostEntry => (
-            <li>
-                <a href={`/blog/${blogPostEntry.slug}`}>
-                    <Image src={blogPostEntry.data.cover??'/assets/team/czarek.png'} alt={blogPostEntry.data.coverAlt??''} width="250" height="250" />
-                    <h2>{blogPostEntry.data.title}</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4 xl:gap-6 mt-6 md:mt-12">
+    {
+        blogEntries.map(blogPostEntry => (
+            <a href={`/blog/${blogPostEntry.slug}`} class="mb-6 md:mb-12">
+                <Image class="border-2 border-black" src={blogPostEntry.data.cover ?? placeholderCoverImageUrl} alt={blogPostEntry.data.coverAlt ?? ''} height="400" />
+                <h2 class="my-1 text-2xl md:text-3xl leading-normal">
+                    {blogPostEntry.data.title}
+                </h2>
+                <h3 class="text-xl uppercase leading-normal">
                     <time datetime={blogPostEntry.data.createdAt.toISOString()}>
                         {blogPostEntry.data.createdAt.toLocaleDateString('pl')}
                     </time>
-                    <ul>
-                        {blogPostEntry.data.author.map(author => (
-                            <li>{author}</li>
-                        ))}
-                    </ul>
-                    <article>{blogPostEntry.data.description}</article>
-                </a>
-            </li>
-        ))}
-    </ul>
+                    <span>by</span>
+                    <Fragment>{blogPostEntry.data.author.join(', ')}</Fragment>
+                </h3>
+                <div class="text-lg leading-normal">
+                    {blogPostEntry.data.description}
+                </div>
+            </a>
+        ))
+    }
 </div>

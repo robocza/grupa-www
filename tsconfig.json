@@ -16,6 +16,11 @@
       "@pages/*": [
         "pages/*"
       ],
-    }
+    },
+    "plugins": [
+      {
+        "name": "@astrojs/ts-plugin"
+      },
+    ]
   }
 }
