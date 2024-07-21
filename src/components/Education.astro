@@ -1,9 +1,22 @@
 ---
-import Section from "./Section.astro";
-import Spacer from "./Spacer.astro";
+import Section from "@components/Section.astro";
+import Spacer from "@components/Spacer.astro";
+
+const language = Astro.currentLocale;
+
+let sectionTitle;
+
+switch (language) {
+    case 'pl':
+        sectionTitle = 'Edukacja';
+        break;
+    case 'en':
+        sectionTitle = 'Education';
+        break;
+}
 ---
 <Section>
-    <Fragment slot="title">Edukacja</Fragment>
+    <Fragment slot="title">{sectionTitle}</Fragment>
     <Fragment slot="desc">Akademia Sztuk Pięknych w Katowicach, Uniwersytet Pedagogiczny w Krakowie, Akademia Górniczo-Hutnicza Wydział Humanistyczny w Krakowie, UX & Product Design SWPS (Katowice, Sopot, Warszawa), Wyższa Szkoła im. ks. Józefa Tischnera w Krakowie</Fragment>
 </Section>
 <Spacer/>

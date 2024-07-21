@@ -1,0 +1,22 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/Container.astro";
+import Team from "@components/Team.astro";
+import Foundation from "@components/Foundation.astro";
+import Lead from "@components/Lead.astro";
+import Link from "@components/Link.astro";
+---
+<Layout title="About">
+  <Container>
+    <Lead>
+      <Fragment slot="text">
+        As the Working Group, we have been active since 2018.
+        We are united by a planet-centric approach to technology and a passion for experimentation.
+        Our expertise enables us to create innovative end-to-end solutions.
+        Since 2021, we have become a <Link url="#foundation" text="↓foundation"/>.
+      </Fragment>
+    </Lead>
+    <Team />
+    <Foundation />
+  </Container>
+</Layout>

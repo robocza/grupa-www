@@ -1,7 +1,26 @@
 ---
 import Container from "@components/Container.astro";
-import MailLink from "./MailLink.astro"
-import Link from "./Link.astro";
+import MailLink from "@components/MailLink.astro"
+import Link from "@components/Link.astro";
+
+const language = Astro.currentLocale;
+
+let addressFirstLine;
+let addressSecondLine;
+let addressExtra;
+
+switch (language) {
+    case 'pl':
+        addressFirstLine = 'Mikołaja Kopernika 19A';
+        addressSecondLine = '31-531 Kraków';
+        addressExtra = '(budynek Apteki Designu)';
+        break;
+    case 'en':
+        addressFirstLine = 'Mikołaja Kopernika 19A';
+        addressSecondLine = '31-531 Kraków, Poland';
+        addressExtra = '(Design Pharmacy building)';
+        break;
+}
 ---
 <footer class="mt-10 py-10 bg-black text-white">
     <Container>
@@ -14,9 +33,9 @@ import Link from "./Link.astro";
                     <MailLink email="grupa@robocza.org" className="underline hover:text-black hover:bg-white"/>
                 </p>
                 <p class="text-xl mt-8">
-                    Mikołaja Kopernika 19A<br>
-                    31-531 Kraków<br>
-                    (budynek Apteki Designu)
+                    {addressFirstLine}<br>
+                    {addressSecondLine}<br>
+                    {addressExtra}
                 </p>
                 <p class="text-sm mt-8">
                     KRS: 0000512875<br>

@@ -1,9 +1,22 @@
 ---
-import Section from "./Section.astro";
-import Spacer from "./Spacer.astro";
+import Section from "@components/Section.astro";
+import Spacer from "@components/Spacer.astro";
+
+const language = Astro.currentLocale;
+
+let sectionTitle;
+
+switch (language) {
+    case 'pl':
+        sectionTitle = 'Wystąpienia i warsztaty';
+        break;
+    case 'en':
+        sectionTitle = 'Presentations and workshops';
+        break;
+}
 ---
 <Section>
-    <Fragment slot="title">Wystąpienia i warsztaty</Fragment>
+    <Fragment slot="title">{sectionTitle}</Fragment>
     <Fragment slot="desc">Biennale Warszawa, Open Eyes Economy Summit, UX Poland, WUD Kraków, WUD Trójmiasto, WUD Silesia, Gdynia Design Days, ACE Conference, Ciemna Strona UX, Forum Przyszłości, UXUp!, The Future of Work in the Postdigital Age, TechSpo – Technologiczno-społeczne Oblicza XXI wieku, Medialab Katowice, Wydział Sztuki Akademii Nauk Stosowanych w Tarnowie, SoTech Lab, Zrównoważony Biznes Podcast, StartupGrind, Product Camp, Crash Mondays, Dizajn – Sztuka do Rzeczy, Mobile Trends Conference, Eden: Learning Garden, Neural Networking x Fi_rst meetup</Fragment>
 </Section>
 <Spacer/>

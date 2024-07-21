@@ -1,18 +1,37 @@
 ---
-import Section from "./Section.astro";
-import Spacer from "./Spacer.astro";
-import Link from "./Link.astro";
+import Section from "@components/Section.astro";
+import Spacer from "@components/Spacer.astro";
+import Link from "@components/Link.astro";
+
+const language = Astro.currentLocale;
+
+let sectionTitle;
+let description;
+let statuteLinkText;
+
+switch (language) {
+    case 'pl':
+        sectionTitle = 'Wystąpienia i warsztaty';
+        description = 'Naszym celem jest upowszechnianie metod i edukacja w zakresie myślenia projektowego i pracy kreatywnej oraz tworzenie przestrzeni dla współpracy różnych środowisk: biznesowych, naukowych i artystycznych.';
+        statuteLinkText = 'Statut Fundacji (7,87 MB)'
+        break;
+    case 'en':
+        sectionTitle = 'Presentations and workshops';
+        description = 'Our goal is to promote design methods and provide innovative design education. We are committed to creating a space that enables interdisciplinary collaboration between various environments, including business, scientific and artistic.';
+        statuteLinkText = 'Statute of the Foundation (PL) (7,87 MB)'
+        break;
+}
 ---
 <div id="foundation">
     <Section>
-        <Fragment slot="title">Fundacja</Fragment>
-        <Fragment slot="desc">Naszym celem jest upowszechnianie metod i edukacja w zakresie myślenia projektowego i pracy kreatywnej oraz tworzenie przestrzeni dla współpracy różnych środowisk: biznesowych, naukowych i artystycznych.</Fragment>
+        <Fragment slot="title">{sectionTitle}</Fragment>
+        <Fragment slot="desc">{description}</Fragment>
     </Section>
     <div class="flex justify-between mt-6">
         <div>
             <img class="max-h-5 inline-block align-middle" src="/assets/icons/pdf.png" alt="pdf">
             <Link url="/files/Grupa_Robocza_statut_2022.pdf"
-                  text="Statut Fundacji (7,87 MB)"
+                  text={statuteLinkText}
                   className="inline-block align-middle underline hover:text-white hover:bg-black"/>
         </div>
     </div>

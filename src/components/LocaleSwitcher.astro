@@ -1,0 +1,24 @@
+---
+import Link from '@components/Link.astro';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+
+import Config from '../../astro.config.mjs';
+
+export interface Props {
+    language: string;
+}
+
+const language = Astro.currentLocale;
+
+const localeSwitcherUrls = Config.i18n.locales
+    .filter((locale) => locale !== language)
+    .map((locale) => {
+        return {
+            locale: locale,
+            url: getRelativeLocaleUrl(locale),
+        };
+    });
+---
+<nav class="absolute right-0 top-0 mt-12">
+    {localeSwitcherUrls.map((localeUrl) => <Link url={localeUrl.url} text={localeUrl.locale} className="uppercase text-3xl underline hover:text-white hover:bg-black" />)}
+</nav>

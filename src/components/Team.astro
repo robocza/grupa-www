@@ -3,12 +3,27 @@
 import MailLink from "./MailLink.astro"
 import SectionHeader from "./SectionHeader.astro";
 
+const language = Astro.currentLocale;
+
+let sectionTitle;
+let teamMembers;
+
+switch (language) {
+    case 'pl':
+        sectionTitle = 'Zespół';
+        teamMembers = await Astro.glob('./../content/team/*.md');
+        break;
+    case 'en':
+        sectionTitle = 'Team';
+        teamMembers = await Astro.glob('./../content/en/team/*.md');
+        break;
+}
+
 // const teamMembers = await getCollection('team');
-const teamMembers = await Astro.glob('./../content/team/*.md');
 ---
 <div class="my-16">
     <SectionHeader>
-        <Fragment slot="title">Zespół</Fragment>
+        <Fragment slot="title">{sectionTitle}</Fragment>
     </SectionHeader>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 sm:gap-4 xl:gap-6 mt-6 md:mt-12">

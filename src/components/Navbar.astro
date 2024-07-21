@@ -1,11 +1,20 @@
 ---
-import Container from "./Container.astro";
+import Container from "@components/Container.astro";
 import Divider from "@components/Divider.astro";
+import LocaleSwitcher from "@components/LocaleSwitcher.astro";
+import { getRelativeLocaleUrl } from 'astro:i18n';
+
+const language = Astro.currentLocale;
+
+const homeUrl = getRelativeLocaleUrl(language, "/");
 ---
 <header>
     <Container>
-        <div class="mt-12 mb-10 flex w-full justify-between">
-            <a href="/">
+        <div class="relative w-full">
+            <LocaleSwitcher />
+        </div>
+        <div class="pt-12 pb-10 flex w-full justify-between">
+            <a href={homeUrl}>
                 <img src="/assets/logo.svg" alt="Grupa Robocza"/>
             </a>
         </div>

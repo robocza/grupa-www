@@ -1,9 +1,22 @@
 ---
 import Section from "./Section.astro";
 import Spacer from "./Spacer.astro";
+
+const language = Astro.currentLocale;
+
+let sectionTitle;
+
+switch (language) {
+    case 'pl':
+        sectionTitle = 'Współprace';
+        break;
+    case 'en':
+        sectionTitle = 'Collaborations';
+        break;
+}
 ---
 <Section>
-    <Fragment slot="title">Współprace</Fragment>
+    <Fragment slot="title">{sectionTitle}</Fragment>
     <Fragment slot="desc"><a href="https://www.nestproject.eu">Networking Ecologically Smart Territories</a>, Fabryka Pełna Życia / Centre for Critical Technology Studies Uniwersytet Śląski, <a href="https://www.purpose.com/">Purpose | Global Social Impact Agency</a>, VN LAB, Jasna 10, SWPS, Studio Widok, Forte Digital, Spółdzielnia Ogniwo, ITBM, Klimatyczna Baza Wiedzy, Unsound, Wspólnota Hanna, FRSOURCE</Fragment>
 </Section>
 <Spacer/>

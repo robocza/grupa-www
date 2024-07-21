@@ -1,44 +1,89 @@
 ---
-import Badge from "./Badge.astro";
-import SectionHeader from "./SectionHeader.astro";
-import Link from "./Link.astro";
+import Badge from "@components/Badge.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+import Link from "@components/Link.astro";
 
-const projects = [
-    {
-        title: "Minimum Viable Utopia",
-        description: "Społeczność skupiona wokół wyzwań współczesności",
-        logo: "/assets/projects/mvu.svg",
-        url: "https://mvu.pl",
-        badge: null
-    },
-    {
-        title: "Eden Learning Garden",
-        description: "Cykl meetupów poruszająch różne aspekty nowoczesnych technologii",
-        logo: "/assets/projects/eden.svg",
-        url: "https://eden.mvu.pl",
-        badge: null
-    },
-    {
-        title: "Odzież Robocza",
-        description: "Ubrania robocze nowej generacji",
-        logo: "/assets/projects/or.svg",
-        url: "https://odziez.robocza.org",
-        badge: {
-            bg: "bg-[url('/assets/badge/or.svg')] bg-[#ff6651]",
-        }
-    },
-    {
-        title: "Agrocybernetyka",
-        description: "Inicjatywa agrofuturystyczna",
-        logo: "/assets/projects/agrocybernetyka.svg",
-        url: "https://agrocybernetyka.pl/",
-        badge: null
-    },
-];
+const language = Astro.currentLocale;
+
+let sectionTitle;
+let projects;
+
+switch (language) {
+    case 'pl':
+        sectionTitle = 'Nasze projekty';
+        projects = [
+            {
+                title: "Minimum Viable Utopia",
+                description: "Społeczność skupiona wokół wyzwań współczesności",
+                logo: "/assets/projects/mvu.svg",
+                url: "https://mvu.pl",
+                badge: null
+            },
+            {
+                title: "Eden Learning Garden",
+                description: "Cykl meetupów poruszająch różne aspekty nowoczesnych technologii",
+                logo: "/assets/projects/eden.svg",
+                url: "https://eden.mvu.pl",
+                badge: null
+            },
+            {
+                title: "Odzież Robocza",
+                description: "Ubrania robocze nowej generacji",
+                logo: "/assets/projects/or.svg",
+                url: "https://odziez.robocza.org",
+                badge: {
+                    bg: "bg-[url('/assets/badge/or.svg')] bg-[#ff6651]",
+                }
+            },
+            {
+                title: "Agrocybernetyka",
+                description: "Inicjatywa agrofuturystyczna",
+                logo: "/assets/projects/agrocybernetyka.svg",
+                url: "https://agrocybernetyka.pl/",
+                badge: null
+            },
+        ];
+        break;
+    case 'en':
+        sectionTitle = 'Our projects';
+        projects = [
+            {
+                title: "Minimum Viable Utopia",
+                description: "A community focused on contemporary challenges",
+                logo: "/assets/projects/mvu.svg",
+                url: "https://mvu.pl",
+                badge: null
+            },
+            {
+                title: "Eden Learning Garden",
+                description: "Cycle of meetups covering various aspects of modern technologies",
+                logo: "/assets/projects/eden.svg",
+                url: "https://eden.mvu.pl",
+                badge: null
+            },
+            {
+                title: "Odzież Robocza",
+                description: "Next-generation workwear",
+                logo: "/assets/projects/or.svg",
+                url: "https://odziez.robocza.org",
+                badge: {
+                    bg: "bg-[url('/assets/badge/or.svg')] bg-[#ff6651]",
+                }
+            },
+            {
+                title: "Agrocybernetyka",
+                description: "Agrofuturistic initiative",
+                logo: "/assets/projects/agrocybernetyka.svg",
+                url: "https://agrocybernetyka.pl/",
+                badge: null
+            },
+        ];
+        break;
+}
 ---
 <div class="my-6 md:my-12">
     <SectionHeader>
-        <Fragment slot="title">Nasze projekty</Fragment>
+        <Fragment slot="title">{sectionTitle}</Fragment>
     </SectionHeader>
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 sm:gap-4 xl:gap-6 mt-8 mb-4 md:mt-16 md:mb-8">
