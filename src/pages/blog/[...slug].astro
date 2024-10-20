@@ -26,6 +26,14 @@ const { Content } = await entry.render();
                 {entry.data.title}
             </Fragment>
         </Lead>
+        <h3 class="text-xl uppercase leading-normal">
+            <time datetime={entry.data.createdAt.toISOString()}>
+                {entry.data.createdAt.toLocaleDateString('pl')}
+            </time>
+            <span>by</span>
+            <Fragment>{entry.data.author.join(', ')}</Fragment>
+        </h3>
+        <h4></h4>
         <article class="prose">
             <Content />
         </article>

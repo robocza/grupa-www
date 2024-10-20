@@ -12,7 +12,7 @@ const blogEntries = await getCollection('blog', ({ data }) => {
     {
         blogEntries.map(blogPostEntry => (
             <a href={`/blog/${blogPostEntry.slug}`} class="mb-6 md:mb-12">
-                <Image class="border-2 border-black" src={blogPostEntry.data.cover ?? placeholderCoverImageUrl} alt={blogPostEntry.data.coverAlt ?? ''} height="400" />
+                <Image class="border-2 border-black aspect-square object-cover" src={blogPostEntry.data.cover ?? placeholderCoverImageUrl} alt={blogPostEntry.data.coverAlt ?? ''} height="400" />
                 <h2 class="my-1 text-2xl md:text-3xl leading-normal">
                     {blogPostEntry.data.title}
                 </h2>
