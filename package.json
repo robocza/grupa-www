@@ -23,6 +23,6 @@
     "@tailwindcss/typography": "^0.5.15"
   },
   "engines": {
-    "node": "^20.14"
+    "node": "^24.13.1"
   }
 }
