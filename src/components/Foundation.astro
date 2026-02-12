@@ -8,17 +8,20 @@ const language = Astro.currentLocale;
 let sectionTitle;
 let description;
 let statuteLinkText;
+let genderEqualityPlanLinkText;
 
 switch (language) {
     case 'pl':
-        sectionTitle = 'Wystąpienia i warsztaty';
+        sectionTitle = 'O fundacji';
         description = 'Naszym celem jest upowszechnianie metod i edukacja w zakresie myślenia projektowego i pracy kreatywnej oraz tworzenie przestrzeni dla współpracy różnych środowisk: biznesowych, naukowych i artystycznych.';
-        statuteLinkText = 'Statut Fundacji (7,87 MB)'
+        statuteLinkText = 'Statut Fundacji (7,87 MB)';
+        genderEqualityPlanLinkText = 'Plan Równości Płci (2,13 MB)'
         break;
     case 'en':
-        sectionTitle = 'Presentations and workshops';
+        sectionTitle = 'About foundation';
         description = 'Our goal is to promote design methods and provide innovative design education. We are committed to creating a space that enables interdisciplinary collaboration between various environments, including business, scientific and artistic.';
-        statuteLinkText = 'Statute of the Foundation (PL) (7,87 MB)'
+        statuteLinkText = 'Statute of the Foundation (PL) (7.87 MB)';
+        genderEqualityPlanLinkText = 'Gender Equality Plan (PL) (2.13 MB)'
         break;
 }
 ---
@@ -27,11 +30,17 @@ switch (language) {
         <Fragment slot="title">{sectionTitle}</Fragment>
         <Fragment slot="desc">{description}</Fragment>
     </Section>
-    <div class="flex justify-between mt-6">
+    <div class="flex flex-col justify-between mt-6 gap-4">
         <div>
             <img class="max-h-5 inline-block align-middle" src="/assets/icons/pdf.png" alt="pdf">
             <Link url="/files/Grupa_Robocza_statut_2022.pdf"
                   text={statuteLinkText}
+                  className="inline-block align-middle underline hover:text-white hover:bg-black"/>
+        </div>
+        <div>
+            <img class="max-h-5 inline-block align-middle" src="/assets/icons/pdf.png" alt="pdf">
+            <Link url="/files/grupa_robocza_plan_rownosci_plci.pdf"
+                  text={genderEqualityPlanLinkText}
                   className="inline-block align-middle underline hover:text-white hover:bg-black"/>
         </div>
     </div>
