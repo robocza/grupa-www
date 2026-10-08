@@ -1,0 +1,19 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/Container.astro";
+import Lead from "@components/Lead.astro";
+---
+<Layout title="About">
+    <Container>
+        <Lead>
+            <Fragment slot="text">
+                Dziękujemy!<br />
+                <br />
+                Przygotowujemy Twoje zamówienie i wyślemy je najszybciej jak potrafimy.<br />
+                <br />
+                Problem z zamówieniem?<br />
+                <a class="block underline hover:opacity-50" href="mailto:grupa@robocza.org">grupa@robocza.org</a>
+            </Fragment>
+        </Lead>
+    </Container>
+</Layout>
