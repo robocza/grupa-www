@@ -32,9 +32,47 @@ const teamCollection = defineCollection({
     }),
 });
 
+// Shop products, edited via Sveltia CMS. Entry slug comes from the file name.
+// Description is the Markdown body. Images live in `src/content/products/images/`.
+// Prices are in PLN grosze (4900 = 49,00 zł); the checkout function reads them from here,
+// never from the browser.
+const productsCollection = defineCollection({
+    type: 'content',
+    schema: ({image}) => z.object({
+        name: z.string().min(1),
+        summary: z.string().optional(),
+        images: z.array(z.object({
+            src: image(),
+            alt: z.string().default(''),
+        })).min(1),
+        active: z.boolean().default(true),
+        order: z.number().int().default(0),
+        variants: z.array(z.object({
+            // Shown to the customer, e.g. "M / czarny". Ignored when a product has a single variant.
+            label: z.string().min(1),
+            // Unique across the whole shop; identifies the cart item at checkout.
+            sku: z.string().regex(/^[A-Za-z0-9_-]+$/, 'SKU may only contain letters, digits, "-" and "_"'),
+            price: z.number().int().positive(),
+            // Shown instead of the main image when this variant is selected.
+            image: image().optional(),
+            available: z.boolean().default(true),
+        })).min(1),
+    }).superRefine((product, ctx) => {
+        const skus = new Set<string>();
+
+        product.variants.forEach((variant, i) => {
+            if (skus.has(variant.sku)) {
+                ctx.addIssue({code: z.ZodIssueCode.custom, path: ['variants', i, 'sku'], message: `Duplicate SKU "${variant.sku}"`});
+            }
+            skus.add(variant.sku);
+        });
+    }),
+});
+
 // 3. Export a single `collections` object to register your collection(s)
 //    This key should match your collection directory name in "src/content"
 export const collections = {
     'blog': blogCollection,
     'team': teamCollection,
+    'products': productsCollection,
 };
