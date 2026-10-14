@@ -1,5 +1,13 @@
 import { defineConfig, passthroughImageService } from "astro/config";
 import tailwind from "@astrojs/tailwind";
+import fs from "node:fs";
+
+// Self-signed cert for HTTPS on the dev server (Sveltia CMS needs HTTPS outside localhost).
+// Generate with `make dev-cert`; without it the dev server uses plain HTTP.
+const devCert = {key: ".docker/certs/dev-key.pem", cert: ".docker/certs/dev-cert.pem"};
+const devHttps = fs.existsSync(devCert.key) && fs.existsSync(devCert.cert)
+    ? {key: fs.readFileSync(devCert.key), cert: fs.readFileSync(devCert.cert)}
+    : undefined;
 
 // https://astro.build/config
 export default defineConfig({
@@ -22,6 +30,7 @@ export default defineConfig({
     },
     vite: {
         server: {
+            https: devHttps,
             watch: {
                 ignored: ['**/.idea/workspace.xml']
             }
