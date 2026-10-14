@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # dev server TLS cert (make dev-cert)
 .docker/certs/
+
+# local docker overrides
+docker-compose.override.yml

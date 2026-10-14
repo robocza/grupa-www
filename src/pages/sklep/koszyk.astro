@@ -28,7 +28,6 @@ const qtyButton = "border-2 border-black w-10 h-10 text-xl hover:bg-black hover:
         <div class="mt-6 flex flex-col items-end gap-4">
             <p class="text-2xl uppercase">Razem: <span id="cart-total"></span></p>
             <p class="text-lg">Koszt dostawy zostanie doliczony w następnym kroku.</p>
-            <!-- The delivery step is added next; until then this button stays disabled. -->
             <button id="cart-next" type="button" class="w-full sm:w-auto border-2 border-black bg-black text-white uppercase text-xl px-8 py-3 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-black disabled:hover:text-white" disabled>
                 Dalej: dostawa
             </button>
@@ -120,10 +119,13 @@ const qtyButton = "border-2 border-black w-10 h-10 text-xl hover:bg-black hover:
         }
 
         total.textContent = formatPrice(sum);
-        // TODO: enable once the delivery step exists.
-        next.disabled = true;
+        next.disabled = hasUnavailable;
         blocked.hidden = !hasUnavailable;
     }
+
+    next.addEventListener('click', () => {
+        window.location.href = '/sklep/dostawa';
+    });
 
     fetchCatalog()
         .then(catalog => {

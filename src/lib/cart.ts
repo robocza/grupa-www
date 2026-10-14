@@ -1,3 +1,5 @@
+import {isDeliveryMethod, type Delivery} from './shipping';
+
 // Client-side cart kept in localStorage. Only SKUs and quantities are stored; names and
 // prices come from /sklep/katalog.json and are checked again at checkout.
 
@@ -92,4 +94,24 @@ export async function fetchCatalog(): Promise<Catalog> {
     }
 
     return response.json();
+}
+
+const DELIVERY_KEY = 'gr-delivery';
+
+export function getDelivery(): Delivery | null {
+    try {
+        const delivery = JSON.parse(localStorage.getItem(DELIVERY_KEY) ?? 'null');
+
+        return isDeliveryMethod(delivery?.method) ? delivery : null;
+    } catch {
+        return null;
+    }
+}
+
+export function saveDelivery(delivery: Delivery): void {
+    try {
+        localStorage.setItem(DELIVERY_KEY, JSON.stringify(delivery));
+    } catch {
+        // Storage unavailable: the choice only lasts for this page.
+    }
 }

@@ -7,3 +7,7 @@ declare namespace Astro {
         optimize?: boolean;
     }
 }
+
+interface ImportMetaEnv {
+    readonly PUBLIC_INPOST_GEOWIDGET_TOKEN?: string;
+}
