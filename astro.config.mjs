@@ -17,6 +17,9 @@ export default defineConfig({
     integrations: [
         tailwind(),
     ],
+    redirects: {
+        "/kup-kjut-akceleracjonizm": "https://buy.stripe.com/cNicN59QM3kudwf0fp4wM0b"
+    },
     vite: {
         server: {
             watch: {
