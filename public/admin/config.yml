@@ -11,6 +11,11 @@ backend:
 media_folder: public/assets/uploads
 public_folder: /assets/uploads
 
+# Astro's `image()` only accepts files in the repo, so no stock photos (they hotlink) or URLs.
+media_libraries:
+  stock_assets:
+    providers: []
+
 slug:
   encoding: ascii
   clean_accents: true
@@ -51,7 +56,7 @@ collections:
         summary: '{{alt}}'
         hint: Pierwsze zdjęcie jest zdjęciem głównym.
         fields:
-          - { name: src, label: Plik, widget: image }
+          - { name: src, label: Plik, widget: image, choose_url: false }
           - { name: alt, label: Opis zdjęcia (dla niewidomych), required: false }
       - name: variants
         label: Warianty
@@ -72,6 +77,6 @@ collections:
             value_type: int
             min: 1
             hint: 'W groszach: 4900 = 49,00 zł.'
-          - { name: image, label: Zdjęcie wariantu, widget: image, required: false }
+          - { name: image, label: Zdjęcie wariantu, widget: image, required: false, choose_url: false }
           - { name: available, label: Dostępny, widget: boolean, default: true }
       - { name: body, label: Opis, widget: richtext, required: false }
