@@ -29,6 +29,9 @@ const linkClass = "underline hover:text-white hover:bg-black";
         <noscript>
             <p class="text-2xl mt-6">Zamówienie wymaga włączonej obsługi JavaScript.</p>
         </noscript>
+        <p id="delivery-cancelled" class="text-xl mt-6 border-2 border-black p-4" role="status" hidden>
+            Płatność została anulowana. Twój koszyk jest zachowany — możesz spróbować ponownie.
+        </p>
         <p id="delivery-status" class="text-2xl mt-6" role="status">Wczytywanie koszyka…</p>
 
         <form id="delivery-form" class="mt-6" hidden>
@@ -228,6 +231,14 @@ const linkClass = "underline hover:text-white hover:bg-black";
         }
         submit.disabled = false;
     });
+
+    // Stripe sends the customer back here with ?anulowano when they cancel the payment.
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('anulowano')) {
+        document.getElementById('delivery-cancelled')!.hidden = false;
+        params.delete('anulowano');
+        history.replaceState(null, '', window.location.pathname + (params.size ? `?${params}` : ''));
+    }
 
     // Coming back from Stripe with the back button restores the page with the button disabled.
     window.addEventListener('pageshow', event => {

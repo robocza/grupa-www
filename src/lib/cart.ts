@@ -115,3 +115,12 @@ export function saveDelivery(delivery: Delivery): void {
         // Storage unavailable: the choice only lasts for this page.
     }
 }
+
+// After a completed order.
+export function clearDelivery(): void {
+    try {
+        localStorage.removeItem(DELIVERY_KEY);
+    } catch {
+        // Storage unavailable: nothing to clear.
+    }
+}

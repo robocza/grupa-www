@@ -1,5 +1,5 @@
 import type {APIRoute} from 'astro';
-import Stripe from 'stripe';
+import {getStripe} from '@lib/stripe';
 import {getCatalog, itemName} from '@lib/shop';
 import {parseOrder, type Order} from '@lib/checkout';
 import {SHIPPING, PICKUP_CONTACT} from '@lib/shipping';
@@ -10,11 +10,6 @@ export const prerender = false;
 
 function json(body: unknown, status = 200): Response {
     return new Response(JSON.stringify(body), {status, headers: {'Content-Type': 'application/json'}});
-}
-
-function stripeKey(): string | undefined {
-    // process.env on Netlify at runtime; import.meta.env reads .env in dev.
-    return process.env.STRIPE_SECRET_KEY ?? import.meta.env.STRIPE_SECRET_KEY;
 }
 
 function deliveryMessage({delivery}: Order): string | undefined {
@@ -29,8 +24,8 @@ function deliveryMessage({delivery}: Order): string | undefined {
 }
 
 export const POST: APIRoute = async ({request}) => {
-    const key = stripeKey();
-    if (!key) {
+    const stripe = getStripe();
+    if (!stripe) {
         console.error('STRIPE_SECRET_KEY is not set');
         return json({error: 'Płatności są chwilowo niedostępne.'}, 503);
     }
@@ -64,7 +59,6 @@ export const POST: APIRoute = async ({request}) => {
     const origin = new URL(request.url).origin;
 
     try {
-        const stripe = new Stripe(key);
         const session = await stripe.checkout.sessions.create({
             mode: 'payment',
             locale: 'pl',
@@ -91,8 +85,8 @@ export const POST: APIRoute = async ({request}) => {
             custom_text: message ? {submit: {message}} : undefined,
             metadata,
             payment_intent_data: {metadata},
-            success_url: `${origin}/dziekujemy?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${origin}/sklep/dostawa`,
+            success_url: `${origin}/sklep/dziekujemy?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${origin}/sklep/dostawa/?anulowano`,
         });
 
         return json({url: session.url});
