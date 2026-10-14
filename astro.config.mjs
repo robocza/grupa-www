@@ -1,5 +1,6 @@
 import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
+import netlify from "@astrojs/netlify";
 import fs from "node:fs";
 
 // Self-signed cert for HTTPS on the dev server (Sveltia CMS needs HTTPS outside localhost).
@@ -12,6 +13,12 @@ const devHttps = fs.existsSync(devCert.key) && fs.existsSync(devCert.cert)
 // https://astro.build/config
 export default defineConfig({
     site: "https://grupa.robocza.org",
+    // Pages stay static; only routes with `prerender = false` (shop API) run as Netlify Functions.
+    output: "hybrid",
+    adapter: netlify({
+        // Netlify Image CDN would replace our image service and re-encode the blog images.
+        imageCDN: false,
+    }),
     i18n: {
         defaultLocale: "pl",
         locales: ["en", "pl"],

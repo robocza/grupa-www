@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # local docker overrides
 docker-compose.override.yml
+
+# Netlify adapter build output
+.netlify/

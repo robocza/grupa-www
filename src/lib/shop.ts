@@ -46,3 +46,26 @@ export function minPrice(product: Product): number {
 export function hasPriceRange(product: Product): boolean {
     return new Set(product.data.variants.map(variant => variant.price)).size > 1;
 }
+
+export interface CatalogEntry {
+    product: Product;
+    variant: ProductVariant;
+}
+
+// SKU -> product and variant, for active products only.
+export async function getCatalog(): Promise<Map<string, CatalogEntry>> {
+    const catalog = new Map<string, CatalogEntry>();
+
+    for (const product of await getActiveProducts()) {
+        for (const variant of product.data.variants) {
+            catalog.set(variant.sku, {product, variant});
+        }
+    }
+
+    return catalog;
+}
+
+// "Bluza — M / czarny", or just the name when the product has a single variant.
+export function itemName({product, variant}: CatalogEntry): string {
+    return product.data.variants.length > 1 ? `${product.data.name} — ${variant.label}` : product.data.name;
+}

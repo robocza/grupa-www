@@ -81,7 +81,6 @@ const linkClass = "underline hover:text-white hover:bg-black";
 
             <div class="mt-6 flex flex-col items-end gap-4">
                 <p id="delivery-error" class="text-lg" role="alert"></p>
-                <!-- Payment is added in the next step; until then this button stays disabled. -->
                 <button id="delivery-submit" type="submit" class="w-full sm:w-auto border-2 border-black bg-black text-white uppercase text-xl px-8 py-3 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-black disabled:hover:text-white" disabled>
                     Przejdź do płatności
                 </button>
@@ -135,9 +134,9 @@ const linkClass = "underline hover:text-white hover:bg-black";
         document.getElementById('sum-shipping')!.textContent = method ? formatPrice(shipping) : '—';
         document.getElementById('sum-total')!.textContent = formatPrice(subtotal + shipping);
 
-        error.textContent = method === 'paczkomat' && !point ? 'Wybierz paczkomat, aby przejść dalej.' : '';
-        // TODO: enable once the checkout function exists.
-        submit.disabled = true;
+        const needsPoint = method === 'paczkomat' && !point;
+        error.textContent = needsPoint ? 'Wybierz paczkomat, aby przejść dalej.' : '';
+        submit.disabled = !method || needsPoint;
     }
 
     function setDelivery(next: Delivery) {
@@ -204,7 +203,38 @@ const linkClass = "underline hover:text-white hover:bg-black";
         loadGeowidget();
     });
 
-    form.addEventListener('submit', event => event.preventDefault());
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
+        if (!delivery) {
+            return;
+        }
+
+        submit.disabled = true;
+        error.textContent = '';
+        try {
+            const response = await fetch('/api/checkout', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({items: getCart(), delivery}),
+            });
+            const result = await response.json().catch(() => ({}));
+            if (response.ok && result.url) {
+                window.location.href = result.url;
+                return;
+            }
+            error.textContent = result.error ?? 'Nie udało się rozpocząć płatności. Spróbuj ponownie.';
+        } catch {
+            error.textContent = 'Brak połączenia. Spróbuj ponownie.';
+        }
+        submit.disabled = false;
+    });
+
+    // Coming back from Stripe with the back button restores the page with the button disabled.
+    window.addEventListener('pageshow', event => {
+        if (event.persisted && !form.hidden) {
+            render();
+        }
+    });
 
     fetchCatalog()
         .then(catalog => {
