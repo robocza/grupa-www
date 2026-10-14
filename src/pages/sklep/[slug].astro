@@ -1,0 +1,135 @@
+---
+import { Image, getImage } from 'astro:assets';
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/Container.astro";
+import Link from "@components/Link.astro";
+import { getActiveProducts, formatPrice, type Product } from "@lib/shop";
+
+export async function getStaticPaths() {
+    const products = await getActiveProducts();
+
+    return products.map(product => ({
+        params: { slug: product.slug }, props: { product },
+    }));
+}
+
+interface Props {
+    product: Product;
+}
+
+const { product } = Astro.props;
+const { name, images, variants } = product.data;
+const { Content } = await product.render();
+
+const imageWidth = 1000;
+const gallery = await Promise.all(images.map(async image => ({
+    src: (await getImage({ src: image.src, width: imageWidth })).src,
+    alt: image.alt,
+})));
+
+const options = await Promise.all(variants.map(async variant => ({
+    ...variant,
+    formattedPrice: formatPrice(variant.price),
+    imageSrc: variant.image ? (await getImage({ src: variant.image, width: imageWidth })).src : undefined,
+})));
+
+// Preselect the first available variant; if none is available, the product is sold out.
+const selected = options.find(option => option.available) ?? options[0];
+const soldOut = !selected.available;
+---
+<Layout title={name}>
+    <Container>
+        <p class="mt-10 text-xl">
+            <Link url="/sklep" text="← Sklep" />
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 xl:gap-12 mt-6">
+            <div>
+                <Image id="product-image" class="border-2 border-black aspect-square object-cover w-full" src={images[0].src} alt={images[0].alt} width={imageWidth} loading="eager" />
+                {gallery.length > 1 && (
+                    <div class="grid grid-cols-4 gap-2 mt-2">
+                        {gallery.map((image, i) => (
+                            <button type="button" class="border-2 border-black hover:opacity-70" data-gallery-src={image.src} data-gallery-alt={image.alt} aria-label={`Pokaż zdjęcie ${i + 1}`}>
+                                <Image class="aspect-square object-cover w-full" src={images[i].src} alt="" width="250" />
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
+            <div>
+                <h1 class="text-3xl md:text-4xl leading-normal">{name}</h1>
+                <p id="product-price" class="text-2xl uppercase leading-normal mt-2">{selected.formattedPrice}</p>
+
+                <form id="product-form" class="mt-6" data-product={product.slug}>
+                    {options.length > 1 && (
+                        <fieldset class="mb-6">
+                            <legend class="text-xl uppercase mb-2">Wariant</legend>
+                            <div class="flex flex-wrap gap-2">
+                                {options.map(option => (
+                                    <label class="border-2 border-black px-4 py-2 text-xl cursor-pointer has-[:checked]:bg-black has-[:checked]:text-white has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-40 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2">
+                                        <input
+                                            type="radio"
+                                            name="sku"
+                                            class="sr-only"
+                                            value={option.sku}
+                                            checked={option === selected}
+                                            disabled={!option.available}
+                                            data-price={option.formattedPrice}
+                                            data-image-src={option.imageSrc}
+                                            data-image-alt={`${name} — ${option.label}`}
+                                        />
+                                        <span class:list={{"line-through": !option.available}}>{option.label}</span>
+                                        {!option.available && <span class="sr-only"> (wyprzedane)</span>}
+                                    </label>
+                                ))}
+                            </div>
+                        </fieldset>
+                    )}
+                    {options.length === 1 && <input type="hidden" name="sku" value={selected.sku} />}
+
+                    <!-- Wired up to the cart in the next step. -->
+                    <button type="submit" class="w-full sm:w-auto border-2 border-black bg-black text-white uppercase text-xl px-8 py-3 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-black disabled:hover:text-white" disabled={soldOut}>
+                        {soldOut ? "Wyprzedane" : "Dodaj do koszyka"}
+                    </button>
+                </form>
+
+                <article class="prose prose-lg mt-10">
+                    <Content />
+                </article>
+            </div>
+        </div>
+    </Container>
+</Layout>
+
+<script>
+    const mainImage = document.getElementById('product-image') as HTMLImageElement | null;
+    const price = document.getElementById('product-price');
+    const defaultImage = mainImage && {src: mainImage.src, alt: mainImage.alt};
+
+    function showImage(src: string, alt: string) {
+        if (!mainImage) {
+            return;
+        }
+        mainImage.removeAttribute('srcset');
+        mainImage.src = src;
+        mainImage.alt = alt;
+    }
+
+    document.querySelectorAll<HTMLButtonElement>('[data-gallery-src]').forEach(button => {
+        button.addEventListener('click', () => showImage(button.dataset.gallerySrc!, button.dataset.galleryAlt ?? ''));
+    });
+
+    document.querySelectorAll<HTMLInputElement>('input[name="sku"][type="radio"]').forEach(input => {
+        input.addEventListener('change', () => {
+            if (price && input.dataset.price) {
+                price.textContent = input.dataset.price;
+            }
+            if (input.dataset.imageSrc) {
+                showImage(input.dataset.imageSrc, input.dataset.imageAlt ?? '');
+            } else if (defaultImage) {
+                showImage(defaultImage.src, defaultImage.alt);
+            }
+        });
+    });
+
+    document.getElementById('product-form')?.addEventListener('submit', event => event.preventDefault());
+</script>
