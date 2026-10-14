@@ -2,6 +2,7 @@ import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import netlify from "@astrojs/netlify";
 import fs from "node:fs";
+import { defaultLocale, locales } from "./src/i18n.mjs";
 
 // Self-signed cert for HTTPS on the dev server (Sveltia CMS needs HTTPS outside localhost).
 // Generate with `make dev-cert`; without it the dev server uses plain HTTP.
@@ -20,8 +21,8 @@ export default defineConfig({
         imageCDN: false,
     }),
     i18n: {
-        defaultLocale: "pl",
-        locales: ["en", "pl"],
+        defaultLocale,
+        locales,
         routing: {
             prefixDefaultLocale: false
         }
