@@ -15,7 +15,7 @@ export const SHIPPING: Record<DeliveryMethod, ShippingOption> = {
 };
 
 export const PICKUP_CONTACT = {
-    email: 'makroskop@robocza.org',
+    email: 'grupa@robocza.org',
     instagram: 'grupa.robocza',
 };
 
