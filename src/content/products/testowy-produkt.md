@@ -1,6 +1,6 @@
 ---
 name: Leksykon „Makroskop. Jak patrzeć na technologie?”
-summary: Leksykon „Makroskop. Jak patrzeć na technologie?” pod redakcją Mai Starakiewicz.
+summary: Leksykon „Makroskop. Jak patrzeć na technologie?” pod redakcją Mai Starakiewicz
 active: true
 order: 1
 images:
