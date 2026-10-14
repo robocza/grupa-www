@@ -1,0 +1,20 @@
+---
+// Link to the cart with the item count, filled in client-side from localStorage.
+---
+<a href="/sklep/koszyk" class="text-xl underline hover:text-white hover:bg-black">
+    Koszyk <span data-cart-count></span>
+</a>
+
+<script>
+    import {cartCount, onCartChange} from '@lib/cart';
+
+    function render() {
+        const count = cartCount();
+        document.querySelectorAll('[data-cart-count]').forEach(element => {
+            element.textContent = count > 0 ? `(${count})` : '';
+        });
+    }
+
+    render();
+    onCartChange(render);
+</script>

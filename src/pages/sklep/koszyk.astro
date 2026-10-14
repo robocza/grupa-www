@@ -1,0 +1,136 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/Container.astro";
+import Link from "@components/Link.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+
+const qtyButton = "border-2 border-black w-10 h-10 text-xl hover:bg-black hover:text-white disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-black";
+---
+<Layout title="Koszyk">
+    <Container>
+        <div class="mt-10 text-xl">
+            <Link url="/sklep" text="← Sklep" />
+        </div>
+        <div class="mt-2">
+            <SectionHeader>
+                <Fragment slot="title">Koszyk</Fragment>
+            </SectionHeader>
+        </div>
+
+        <noscript>
+            <p class="text-2xl mt-6">Koszyk wymaga włączonej obsługi JavaScript.</p>
+        </noscript>
+        <p id="cart-status" class="text-2xl mt-6" role="status">Wczytywanie koszyka…</p>
+
+        <ul id="cart-lines" class="list-none mt-6"></ul>
+
+        <div id="cart-summary" hidden>
+        <div class="mt-6 flex flex-col items-end gap-4">
+            <p class="text-2xl uppercase">Razem: <span id="cart-total"></span></p>
+            <p class="text-lg">Koszt dostawy zostanie doliczony w następnym kroku.</p>
+            <!-- The delivery step is added next; until then this button stays disabled. -->
+            <button id="cart-next" type="button" class="w-full sm:w-auto border-2 border-black bg-black text-white uppercase text-xl px-8 py-3 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-black disabled:hover:text-white" disabled>
+                Dalej: dostawa
+            </button>
+            <p id="cart-blocked" class="text-lg" hidden>Usuń niedostępne produkty, aby przejść dalej.</p>
+        </div>
+        </div>
+
+        <template id="cart-line">
+            <li class="flex flex-wrap sm:flex-nowrap items-center gap-4 py-4 border-b-2 border-black">
+                <img data-image class="w-20 h-20 border-2 border-black object-cover shrink-0" alt="" width="80" height="80" />
+                <div class="grow min-w-0">
+                    <a data-link class="text-xl underline hover:text-white hover:bg-black"></a>
+                    <p data-label class="text-lg"></p>
+                    <p data-unit-price class="text-lg"></p>
+                    <p data-unavailable class="text-lg uppercase" hidden>Niedostępny</p>
+                </div>
+                <div data-qty>
+                    <div class="flex items-center gap-2">
+                        <button data-decrease type="button" class={qtyButton} aria-label="Zmniejsz ilość">−</button>
+                        <span data-qty-value class="w-8 text-center text-xl" aria-live="polite"></span>
+                        <button data-increase type="button" class={qtyButton} aria-label="Zwiększ ilość">+</button>
+                    </div>
+                </div>
+                <p data-line-total class="w-28 text-right text-xl"></p>
+                <button data-remove type="button" class="text-lg underline hover:text-white hover:bg-black">Usuń</button>
+            </li>
+        </template>
+    </Container>
+</Layout>
+
+<script>
+    import {getCart, setQty, removeFromCart, onCartChange, fetchCatalog, MAX_QTY, type Catalog} from '@lib/cart';
+    import {formatPrice} from '@lib/price';
+
+    const status = document.getElementById('cart-status')!;
+    const list = document.getElementById('cart-lines')!;
+    const summary = document.getElementById('cart-summary')!;
+    const total = document.getElementById('cart-total')!;
+    const next = document.getElementById('cart-next') as HTMLButtonElement;
+    const blocked = document.getElementById('cart-blocked')!;
+    const template = document.getElementById('cart-line') as HTMLTemplateElement;
+
+    function render(catalog: Catalog) {
+        const lines = getCart();
+        let sum = 0;
+        let hasUnavailable = false;
+
+        list.replaceChildren();
+        status.textContent = lines.length === 0 ? 'Koszyk jest pusty.' : '';
+        status.hidden = lines.length > 0;
+        summary.hidden = lines.length === 0;
+
+        for (const {sku, qty} of lines) {
+            const item = catalog[sku];
+            const available = item?.available === true;
+            const row = template.content.firstElementChild!.cloneNode(true) as HTMLElement;
+            const find = (name: string) => row.querySelector<HTMLElement>(`[data-${name}]`)!;
+
+            const link = find('link') as HTMLAnchorElement;
+            link.textContent = item?.name ?? sku;
+            if (item) {
+                link.href = item.url;
+                (find('image') as HTMLImageElement).src = item.image;
+                find('label').textContent = item.label ?? '';
+                find('unit-price').textContent = `${formatPrice(item.price)} / szt.`;
+            } else {
+                link.removeAttribute('href');
+                find('image').hidden = true;
+            }
+
+            find('qty-value').textContent = String(qty);
+            (find('decrease') as HTMLButtonElement).disabled = qty <= 1;
+            (find('increase') as HTMLButtonElement).disabled = qty >= MAX_QTY;
+            find('decrease').addEventListener('click', () => setQty(sku, qty - 1));
+            find('increase').addEventListener('click', () => setQty(sku, qty + 1));
+            find('remove').addEventListener('click', () => removeFromCart(sku));
+
+            if (available) {
+                sum += item.price * qty;
+                find('line-total').textContent = formatPrice(item.price * qty);
+            } else {
+                hasUnavailable = true;
+                find('unavailable').hidden = false;
+                find('qty').hidden = true;
+                find('line-total').textContent = '';
+            }
+
+            list.append(row);
+        }
+
+        total.textContent = formatPrice(sum);
+        // TODO: enable once the delivery step exists.
+        next.disabled = true;
+        blocked.hidden = !hasUnavailable;
+    }
+
+    fetchCatalog()
+        .then(catalog => {
+            render(catalog);
+            onCartChange(() => render(catalog));
+        })
+        .catch(() => {
+            status.textContent = 'Nie udało się wczytać koszyka. Odśwież stronę.';
+        });
+</script>

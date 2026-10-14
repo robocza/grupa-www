@@ -1,5 +1,7 @@
 import {getCollection, type CollectionEntry} from 'astro:content';
 
+export {formatPrice} from './price';
+
 export type Product = CollectionEntry<'products'>;
 export type ProductVariant = Product['data']['variants'][number];
 
@@ -43,11 +45,4 @@ export function minPrice(product: Product): number {
 
 export function hasPriceRange(product: Product): boolean {
     return new Set(product.data.variants.map(variant => variant.price)).size > 1;
-}
-
-const priceFormat = new Intl.NumberFormat('pl-PL', {style: 'currency', currency: 'PLN'});
-
-// Price in grosze -> "49,00 zł"
-export function formatPrice(grosze: number): string {
-    return priceFormat.format(grosze / 100);
 }

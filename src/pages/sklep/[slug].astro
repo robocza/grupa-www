@@ -3,6 +3,7 @@ import { Image, getImage } from 'astro:assets';
 import Layout from "@layouts/Layout.astro";
 import Container from "@components/Container.astro";
 import Link from "@components/Link.astro";
+import CartLink from "@components/CartLink.astro";
 import { getActiveProducts, formatPrice, type Product } from "@lib/shop";
 
 export async function getStaticPaths() {
@@ -39,9 +40,10 @@ const soldOut = !selected.available;
 ---
 <Layout title={name}>
     <Container>
-        <p class="mt-10 text-xl">
+        <div class="mt-10 flex justify-between text-xl">
             <Link url="/sklep" text="← Sklep" />
-        </p>
+            <CartLink />
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 xl:gap-12 mt-6">
             <div>
                 <Image id="product-image" class="border-2 border-black aspect-square object-cover w-full" src={images[0].src} alt={images[0].alt} width={imageWidth} loading="eager" />
@@ -86,10 +88,10 @@ const soldOut = !selected.available;
                     )}
                     {options.length === 1 && <input type="hidden" name="sku" value={selected.sku} />}
 
-                    <!-- Wired up to the cart in the next step. -->
                     <button type="submit" class="w-full sm:w-auto border-2 border-black bg-black text-white uppercase text-xl px-8 py-3 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-black disabled:hover:text-white" disabled={soldOut}>
                         {soldOut ? "Wyprzedane" : "Dodaj do koszyka"}
                     </button>
+                    <p id="product-added" class="text-xl mt-4" role="status"></p>
                 </form>
 
                 <article class="prose prose-lg mt-10">
@@ -101,6 +103,8 @@ const soldOut = !selected.available;
 </Layout>
 
 <script>
+    import {addToCart} from '@lib/cart';
+
     const mainImage = document.getElementById('product-image') as HTMLImageElement | null;
     const price = document.getElementById('product-price');
     const defaultImage = mainImage && {src: mainImage.src, alt: mainImage.alt};
@@ -131,5 +135,17 @@ const soldOut = !selected.available;
         });
     });
 
-    document.getElementById('product-form')?.addEventListener('submit', event => event.preventDefault());
+    const added = document.getElementById('product-added');
+
+    document.getElementById('product-form')?.addEventListener('submit', event => {
+        event.preventDefault();
+        const sku = new FormData(event.target as HTMLFormElement).get('sku');
+        if (typeof sku !== 'string') {
+            return;
+        }
+        addToCart(sku);
+        if (added) {
+            added.innerHTML = 'Dodano do koszyka. <a href="/sklep/koszyk" class="underline hover:text-white hover:bg-black">Przejdź do koszyka →</a>';
+        }
+    });
 </script>
