@@ -24,14 +24,14 @@ const { Content } = await product.render();
 
 const imageWidth = 1000;
 const gallery = await Promise.all(images.map(async image => ({
-    src: (await getImage({ src: image.src, width: imageWidth })).src,
+    src: (await getImage({ src: image.src, width: imageWidth, optimize: true })).src,
     alt: image.alt,
 })));
 
 const options = await Promise.all(variants.map(async variant => ({
     ...variant,
     formattedPrice: formatPrice(variant.price),
-    imageSrc: variant.image ? (await getImage({ src: variant.image, width: imageWidth })).src : undefined,
+    imageSrc: variant.image ? (await getImage({ src: variant.image, width: imageWidth, optimize: true })).src : undefined,
 })));
 
 // Preselect the first available variant; if none is available, the product is sold out.
@@ -46,12 +46,12 @@ const soldOut = !selected.available;
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 xl:gap-12 mt-6">
             <div>
-                <Image id="product-image" class="border-2 border-black aspect-square object-cover w-full" src={images[0].src} alt={images[0].alt} width={imageWidth} loading="eager" />
+                <Image id="product-image" class="border-2 border-black aspect-square object-cover w-full" src={images[0].src} alt={images[0].alt} width={imageWidth} loading="eager" optimize />
                 {gallery.length > 1 && (
                     <div class="grid grid-cols-4 gap-2 mt-2">
                         {gallery.map((image, i) => (
                             <button type="button" class="border-2 border-black hover:opacity-70" data-gallery-src={image.src} data-gallery-alt={image.alt} aria-label={`Pokaż zdjęcie ${i + 1}`}>
-                                <Image class="aspect-square object-cover w-full" src={images[i].src} alt="" width="250" />
+                                <Image class="aspect-square object-cover w-full" src={images[i].src} alt="" width="250" optimize />
                             </button>
                         ))}
                     </div>

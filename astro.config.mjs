@@ -1,4 +1,4 @@
-import { defineConfig, passthroughImageService } from "astro/config";
+import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import fs from "node:fs";
 
@@ -20,7 +20,7 @@ export default defineConfig({
         }
     },
     image: {
-        service: passthroughImageService()
+        service: {entrypoint: "./src/lib/image-service.ts"}
     },
     integrations: [
         tailwind(),

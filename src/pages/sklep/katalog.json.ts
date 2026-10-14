@@ -10,7 +10,7 @@ export const GET: APIRoute = async () => {
 
     for (const product of await getActiveProducts()) {
         for (const variant of product.data.variants) {
-            const image = await getImage({src: variant.image ?? product.data.images[0].src, width: 200});
+            const image = await getImage({src: variant.image ?? product.data.images[0].src, width: 200, optimize: true});
 
             catalog[variant.sku] = {
                 name: product.data.name,
