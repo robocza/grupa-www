@@ -1,0 +1,77 @@
+# yaml-language-server: $schema=https://unpkg.com/@sveltia/cms@0.224.0/schema/sveltia-cms.json
+# Sveltia CMS config. Fields must match the `products` schema in src/content/config.ts.
+
+# TODO: switch to the Gitea backend after the repo moves (see SHOP_PLAN.md).
+backend:
+  name: github
+  repo: robocza/grupa-www
+  # TODO: testing only — set to the branch Netlify deploys before merging.
+  branch: feature/shop
+
+media_folder: public/assets/uploads
+public_folder: /assets/uploads
+
+slug:
+  encoding: ascii
+  clean_accents: true
+
+output:
+  # Astro's `.optional()` rejects empty strings and nulls, so leave empty optional fields out.
+  omit_empty_optional_fields: true
+
+collections:
+  - name: products
+    label: Sklep — produkty
+    label_singular: Produkt
+    folder: src/content/products
+    extension: md
+    format: frontmatter
+    create: true
+    identifier_field: name
+    slug: '{{name}}'
+    media_folder: images
+    public_folder: ./images
+    thumbnail: images.*.src
+    sortable_fields: [order, name]
+    fields:
+      - { name: name, label: Nazwa }
+      - { name: summary, label: Krótki opis, required: false, hint: Jedno zdanie na listę produktów. }
+      - { name: active, label: Widoczny w sklepie, widget: boolean, default: true }
+      - name: order
+        label: Kolejność
+        widget: number
+        value_type: int
+        default: 0
+        hint: Produkty z mniejszą liczbą są wyświetlane wcześniej.
+      - name: images
+        label: Zdjęcia
+        label_singular: Zdjęcie
+        widget: list
+        min: 1
+        summary: '{{alt}}'
+        hint: Pierwsze zdjęcie jest zdjęciem głównym.
+        fields:
+          - { name: src, label: Plik, widget: image }
+          - { name: alt, label: Opis zdjęcia (dla niewidomych), required: false }
+      - name: variants
+        label: Warianty
+        label_singular: Wariant
+        widget: list
+        min: 1
+        summary: '{{label}} — {{price}} gr'
+        hint: Produkt bez wariantów to produkt z jednym wariantem.
+        fields:
+          - { name: label, label: Nazwa wariantu, hint: 'Np. „M / czarny”. Przy jednym wariancie nie jest wyświetlana.' }
+          - name: sku
+            label: SKU (kod produktu)
+            hint: Musi być unikalny w całym sklepie, np. BLUZA-M-CZARNA.
+            pattern: ['^[A-Za-z0-9_-]+$', 'Tylko litery bez polskich znaków, cyfry, „-” i „_”.']
+          - name: price
+            label: Cena w groszach
+            widget: number
+            value_type: int
+            min: 1
+            hint: 'W groszach: 4900 = 49,00 zł.'
+          - { name: image, label: Zdjęcie wariantu, widget: image, required: false }
+          - { name: available, label: Dostępny, widget: boolean, default: true }
+      - { name: body, label: Opis, widget: richtext, required: false }
