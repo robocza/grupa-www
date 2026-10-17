@@ -6,6 +6,14 @@ order: 1
 images:
   - src: ./images/book.png
     alt: Okładka książki „Makroskop. Jak patrzeć na technologie?”
+  - src: ./images/MAKROSKOP_28.jpg
+    alt: Makroskop - fragment o ekonomii uwagi
+  - src: ./images/MAKROSKOP_37.jpg
+    alt: Makroskop - fragment o cyfrowym ogrodnictwie
+  - src: ./images/MAKROSKOP_43.jpg
+    alt: Makroskop - spis treści
+  - src: ./images/MAKROSKOP_44.jpg
+    alt: Makroskop - przykładowa ilustracja wewnątrz książki
 variants:
   - label: Leksykon „Makroskop. Jak patrzeć na technologie?”
     sku: MAKROSKOP
