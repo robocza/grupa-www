@@ -37,6 +37,10 @@ const options = await Promise.all(variants.map(async variant => ({
 // Preselect the first available variant; if none is available, the product is sold out.
 const selected = options.find(option => option.available) ?? options[0];
 const soldOut = !selected.available;
+// Start with the selected variant's own image, if it has one; otherwise the cover.
+const initialImage = selected.image
+    ? { src: selected.image, alt: options.length > 1 ? `${name} — ${selected.label}` : name }
+    : images[0];
 ---
 <Layout title={name}>
     <Container>
@@ -46,7 +50,7 @@ const soldOut = !selected.available;
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 xl:gap-12 mt-6">
             <div>
-                <Image id="product-image" class="border-2 border-black aspect-square object-cover w-full" src={images[0].src} alt={images[0].alt} width={imageWidth} loading="eager" optimize />
+                <Image id="product-image" class="border-2 border-black aspect-square object-cover w-full" src={initialImage.src} alt={initialImage.alt} width={imageWidth} loading="eager" optimize data-cover-src={gallery[0].src} data-cover-alt={gallery[0].alt} />
                 {gallery.length > 1 && (
                     <div class="grid grid-cols-4 gap-2 mt-2">
                         {gallery.map((image, i) => (
@@ -107,7 +111,8 @@ const soldOut = !selected.available;
 
     const mainImage = document.getElementById('product-image') as HTMLImageElement | null;
     const price = document.getElementById('product-price');
-    const defaultImage = mainImage && {src: mainImage.src, alt: mainImage.alt};
+    // Shown for variants without an image of their own.
+    const defaultImage = mainImage && {src: mainImage.dataset.coverSrc!, alt: mainImage.dataset.coverAlt ?? ''};
 
     function showImage(src: string, alt: string) {
         if (!mainImage) {
