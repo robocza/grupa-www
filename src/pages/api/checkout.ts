@@ -12,6 +12,11 @@ function json(body: unknown, status = 200): Response {
     return new Response(JSON.stringify(body), {status, headers: {'Content-Type': 'application/json'}});
 }
 
+// Shown below the pay button. The terms and privacy policy links come from the Stripe account's
+// public details, shown with the consent checkbox.
+const PRIVACY_NOTICE = 'Administratorem danych osobowych podanych w formularzu jest Fundacja Grupa Robocza. '
+    + 'Zasady przetwarzania danych oraz Twoje uprawnienia z tym związane opisane są w polityce prywatności.';
+
 function deliveryMessage({delivery}: Order): string | undefined {
     switch (delivery.method) {
         case 'paczkomat':
@@ -79,10 +84,23 @@ export const POST: APIRoute = async ({request}) => {
                     fixed_amount: {amount: shipping.price, currency: 'pln'},
                 },
             }],
-            // Only the courier needs an address; InPost needs a phone number for lockers.
+            // Only the courier needs a shipping address, and we ship to Poland only.
             shipping_address_collection: method === 'courier' ? {allowed_countries: ['PL']} : undefined,
+            billing_address_collection: 'required',
+            // The customer's full name is always required, whatever the payment method.
+            name_collection: {individual: {enabled: true, optional: false}},
+            // InPost needs a phone number for lockers.
             phone_number_collection: {enabled: true},
-            custom_text: message ? {submit: {message}} : undefined,
+            // "Purchasing as a business" checkbox with business name and tax ID (NIP).
+            tax_id_collection: {enabled: true},
+            // Codes are created in the Stripe Dashboard (coupons and promotion codes).
+            allow_promotion_codes: true,
+            custom_text: {
+                submit: message ? {message} : undefined,
+                after_submit: {message: PRIVACY_NOTICE},
+            },
+            // Customers must tick the checkbox accepting the terms (and privacy policy) to pay.
+            consent_collection: {terms_of_service: 'required'},
             metadata,
             payment_intent_data: {metadata},
             success_url: `${origin}/sklep/dziekujemy?session_id={CHECKOUT_SESSION_ID}`,

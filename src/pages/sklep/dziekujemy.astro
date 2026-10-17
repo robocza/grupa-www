@@ -30,6 +30,8 @@ const paid = session?.payment_status === 'paid';
 const deliveryMethod = session?.metadata?.delivery_method;
 const method = isDeliveryMethod(deliveryMethod) ? deliveryMethod : null;
 const lines = session?.line_items?.data ?? [];
+// Lines and shipping are shown before discounts; a promotion code's discount gets its own row.
+const discount = session?.total_details?.amount_discount ?? 0;
 const linkClass = "underline hover:text-white hover:bg-black";
 const locale = Astro.currentLocale;
 ---
@@ -68,7 +70,7 @@ const locale = Astro.currentLocale;
                     {lines.map(line => (
                         <li class="flex justify-between gap-4 py-2 border-b-2 border-black">
                             <span>{line.description} × {line.quantity}</span>
-                            <span class="shrink-0">{formatPrice(line.amount_total, locale)}</span>
+                            <span class="shrink-0">{formatPrice(line.amount_subtotal, locale)}</span>
                         </li>
                     ))}
                     {method && (
@@ -81,7 +83,13 @@ const locale = Astro.currentLocale;
                                     </span>
                                 )}
                             </span>
-                            <span class="shrink-0">{formatPrice(session.shipping_cost?.amount_total ?? 0, locale)}</span>
+                            <span class="shrink-0">{formatPrice(session.shipping_cost?.amount_subtotal ?? 0, locale)}</span>
+                        </li>
+                    )}
+                    {discount > 0 && (
+                        <li class="flex justify-between gap-4 py-2 border-b-2 border-black">
+                            <span>Rabat</span>
+                            <span class="shrink-0">−{formatPrice(discount, locale)}</span>
                         </li>
                     )}
                     <li class="flex justify-between gap-4 py-2 text-2xl uppercase">

@@ -129,6 +129,7 @@ Local dev:
 - [x] Test product turned into the real `makroskop` product via the CMS.
 - [x] Inactive example product `przyklad` deleted (`book.png` is a real Makroskop photo and stays).
 - [ ] Activate BLIK and Przelewy24 in Stripe **live** mode; switch Netlify `STRIPE_SECRET_KEY` to the live key.
+- [ ] In Stripe **live** mode, set the terms of service and privacy policy URLs (Settings → Business details → Public). Checkout requires terms consent and fails without them (done in the sandbox).
 - [ ] Legal items from "Before launch" above.
 - [ ] Later: webhook + order notification email (needs an email service).
 
