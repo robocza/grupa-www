@@ -127,7 +127,7 @@ Local dev:
 - [ ] Set `branch: main` in `public/admin/config.yml` (currently `feature/shop` for testing).
 - [ ] Merge on Gitea (not with GitHub's merge button; the mirror would overwrite it).
 - [x] Test product turned into the real `makroskop` product via the CMS.
-- [ ] `makroskop` still uses the test image `images/book.png` as its main image; replace it, then delete the file. Keep or delete the inactive template `przyklad`.
+- [x] Inactive example product `przyklad` deleted (`book.png` is a real Makroskop photo and stays).
 - [ ] Activate BLIK and Przelewy24 in Stripe **live** mode; switch Netlify `STRIPE_SECRET_KEY` to the live key.
 - [ ] Legal items from "Before launch" above.
 - [ ] Later: webhook + order notification email (needs an email service).
