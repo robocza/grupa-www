@@ -1,11 +1,15 @@
 # yaml-language-server: $schema=https://unpkg.com/@sveltia/cms@0.224.0/schema/sveltia-cms.json
 # Sveltia CMS config. Fields must match the `products` schema in src/content/config.ts.
 
-# TODO: switch to the Gitea backend after the repo moves (see SHOP_PLAN.md).
+# Editors sign in with their accounts on our Gitea. The repo is mirrored to GitHub, from which
+# Netlify deploys, so the CMS must never commit to GitHub directly.
 backend:
-  name: github
-  repo: robocza/grupa-www
-  # TODO: testing only — set to the branch Netlify deploys before merging.
+  name: gitea
+  repo: grupa-robocza/grupa-www
+  base_url: https://git.robocza.org
+  api_root: https://git.robocza.org/api/v1
+  # TODO: add `app_id` (OAuth2 Client ID from Gitea) to enable "Sign In with Gitea".
+  # TODO: testing only — set to `main` (Netlify's production branch) when merging.
   branch: feature/shop
 
 media_folder: public/assets/uploads

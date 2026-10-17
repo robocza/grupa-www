@@ -75,7 +75,7 @@ Context for adding a small shop to this Astro site. These decisions were made in
 
 - Answered: Gitea is https://git.robocza.org (1.25.3); Astro 4.16.6; shipping is pickup 0 zł / Paczkomat 18 zł / courier 20 zł, no free-shipping threshold.
 - Order notifications: postponed (no email service chosen). Stopgap: Stripe Dashboard notifications for successful payments.
-- Netlify production branch: `main` or `develop`? (Both point to the same commit today; the blog Action pushes to `main`.)
+- Netlify production branch: `main` (answered).
 
 ## Suggested order of work
 
@@ -98,13 +98,13 @@ https://deploy-preview-6--fastidious-moxie-126f16.netlify.app).
 |---|---|---|
 | 1. Inspect repo | Done | Astro 4 legacy content collections (`src/content/config.ts`), Tailwind |
 | 2. Products collection | Done | `src/content/config.ts`, `src/content/products/` (+ `images/`) |
-| 3. Sveltia CMS | Done (GitHub backend, branch `feature/shop`) | `public/admin/` |
+| 3. Sveltia CMS | Done; Gitea backend, branch `feature/shop` until merge | `public/admin/` |
 | 4. Listing + product pages | Done | `src/pages/sklep.astro`, `src/pages/sklep/[slug].astro`, `src/lib/shop.ts` |
 | 5. Cart | Done | `src/lib/cart.ts`, `src/pages/sklep/koszyk.astro`, `/sklep/katalog.json` |
 | 6. Delivery + Geowidget | Done | `src/pages/sklep/dostawa.astro`, prices in `src/lib/shipping.ts` |
 | 7. Checkout function | Done, tested on preview (test mode) | `src/pages/api/checkout.ts`, `src/lib/checkout.ts` |
 | 8. Success/cancel | Done; webhook skipped for now | `src/pages/sklep/dziekujemy.astro`, cancel -> `/sklep/dostawa/?anulowano` |
-| 9. Gitea migration | In progress: repo migrated, push mirror works, local `origin` points to Gitea | see below |
+| 9. Gitea migration | In progress: repo, mirror, CORS, CMS backend done; OAuth Client ID pending | see below |
 
 Decisions made along the way:
 
@@ -124,7 +124,8 @@ Local dev:
 
 ### Before merging / launch
 
-- [ ] Set `branch:` in `public/admin/config.yml` to the production branch (currently `feature/shop` for testing).
+- [ ] Set `branch: main` in `public/admin/config.yml` (currently `feature/shop` for testing).
+- [ ] Merge on Gitea (not with GitHub's merge button; the mirror would overwrite it).
 - [ ] Delete test product `testowy-produkt` (+ `images/book.png`); keep or delete the inactive template `przyklad`.
 - [ ] Activate BLIK and Przelewy24 in Stripe **live** mode; switch Netlify `STRIPE_SECRET_KEY` to the live key.
 - [ ] Legal items from "Before launch" above.
@@ -135,16 +136,18 @@ Local dev:
 Repo: `grupa-robocza/grupa-www` on Gitea (private), SSH `git@git.robocza.org:grupa-robocza/grupa-www.git`.
 GitHub `robocza/grupa-www` (public) is only updated by the push mirror. Don't push to it, and don't use the CMS until it is switched to Gitea: commits made on GitHub are overwritten by the next mirror sync.
 
-Blocker: `.github/workflows/update_submodule.yml` commits to `main` on GitHub when the blog repo changes; a Gitea push mirror would overwrite those commits. Proposal: remove it (and `dispatch_update.yml` in the blog repo) and update the blog submodule manually (`make git-submodule-sync`).
+The GitHub Action that updated the blog submodule (`.github/workflows/update_submodule.yml`) is removed: it committed on GitHub, which the push mirror would overwrite. Until it's reintroduced with Gitea Actions (planned), update the blog manually with `make git-submodule-sync`. `dispatch_update.yml` in the blog repo now dispatches to nothing; disable it there too.
 
 Owner's tasks:
 
 1. ~~Gitea: create the org, migrate the repo from GitHub as a normal repo (not a mirror), all branches.~~ Done.
 2. ~~Push mirror to `https://github.com/robocza/grupa-www.git` with a GitHub fine-grained PAT (Contents + Workflows RW, as the password), sync on push.~~ Done. Renew the token before it expires, or GitHub/Netlify stop updating.
-3. Enable CORS in `app.ini` (preflight currently returns 405):
+3. ~~Enable CORS~~ Done, via `GITEA__cors__*` environment variables in Coolify (Gitea's compose file):
    `[cors] ENABLED = true`, `ALLOW_DOMAIN` = site, `https://gr.local`, preview URLs; `METHODS = GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS`; `HEADERS = Content-Type,User-Agent,Authorization`.
-4. OAuth2 app (not confidential), redirect URIs `https://grupa.robocza.org/admin/`, `https://gr.local/admin/index.html`, preview `/admin/`. Share the Client ID.
+4. OAuth2 app under the `grupa-robocza` org (not confidential), redirect URIs `https://grupa.robocza.org/admin/`, `https://gr.local/admin/index.html`, preview `/admin/`. Share the Client ID.
 5. Editors: Gitea accounts with write access; branch protection with unprotected file pattern `src/content/products/**` (verify it applies to API commits).
 6. Point local clones at Gitea; stop pushing to GitHub directly. (Done for the owner's checkout: `origin` = Gitea, `github` remote is fetch-only.)
 
-Then (code): switch `public/admin/config.yml` to `backend: gitea` with `repo`, `base_url: https://git.robocza.org`, `api_root: https://git.robocza.org/api/v1`, `app_id`, production `branch`; remove the GitHub workflow; make GitHub private too if the code should not be public.
+Then (code): ~~switch `public/admin/config.yml` to `backend: gitea`~~ (done; token sign-in works without `app_id`), add `app_id` once the Client ID exists, set `branch: main` at merge. Make GitHub private too if the code should not be public.
+
+Later: reintroduce automatic blog submodule updates with Gitea Actions (needs a runner).
