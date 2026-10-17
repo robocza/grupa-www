@@ -74,7 +74,7 @@ Context for adding a small shop to this Astro site. These decisions were made in
 ## Open questions
 
 - Answered: Gitea is https://git.robocza.org (1.25.3); Astro 4.16.6; shipping is pickup 0 zł / Paczkomat 18 zł / courier 20 zł, no free-shipping threshold.
-- Order notifications: postponed (no email service chosen). Stopgap: Stripe Dashboard notifications for successful payments.
+- Order notifications: MailerSend (robocza.org is verified there), from and to `sklep@robocza.org`, plus a confirmation to the customer.
 - Netlify production branch: `main` (answered).
 
 ## Suggested order of work
@@ -103,7 +103,7 @@ https://deploy-preview-6--fastidious-moxie-126f16.netlify.app).
 | 5. Cart | Done | `src/lib/cart.ts`, `src/pages/sklep/koszyk.astro`, `/sklep/katalog.json` |
 | 6. Delivery + Geowidget | Done | `src/pages/sklep/dostawa.astro`, prices in `src/lib/shipping.ts` |
 | 7. Checkout function | Done, tested on preview (test mode) | `src/pages/api/checkout.ts`, `src/lib/checkout.ts` |
-| 8. Success/cancel | Done; webhook skipped for now | `src/pages/sklep/dziekujemy.astro`, cancel -> `/sklep/dostawa/?anulowano` |
+| 8. Success/cancel + webhook | Done | `src/pages/sklep/dziekujemy.astro`, cancel -> `/sklep/dostawa/?anulowano`; order emails: `src/pages/api/stripe-webhook.ts`, `src/lib/order-email.ts`, `src/lib/mailersend.ts` |
 | 9. Gitea migration | Done (2026-10-17); merge to `main` pending | see below |
 
 Decisions made along the way:
@@ -131,7 +131,8 @@ Local dev:
 - [ ] Activate BLIK and Przelewy24 in Stripe **live** mode; switch Netlify `STRIPE_SECRET_KEY` to a live **restricted key** with only "Checkout Sessions: Write" (Developers → API keys → Create restricted key), not the full secret key. If it leaks, it can only create and read checkout sessions. No code change needed.
 - [ ] In Stripe **live** mode, set the terms of service and privacy policy URLs (Settings → Business details → Public). Checkout requires terms consent and fails without them (done in the sandbox).
 - [ ] Legal items from "Before launch" above.
-- [ ] Later: webhook + order notification email (needs an email service).
+- [ ] Netlify env vars per deploy context: Production = Stripe **live** `STRIPE_SECRET_KEY` and the live webhook's `STRIPE_WEBHOOK_SECRET`; Deploy previews = sandbox values. `MAILERSEND_API_TOKEN` in all contexts.
+- [ ] Stripe **live** mode: add the webhook endpoint `https://grupa.robocza.org/api/stripe-webhook` with events `checkout.session.completed` and `checkout.session.async_payment_succeeded`.
 
 ### Step 9 (Gitea)
 
