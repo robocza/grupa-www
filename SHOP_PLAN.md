@@ -128,7 +128,7 @@ Local dev:
 - [ ] Merge on Gitea (not with GitHub's merge button; the mirror would overwrite it).
 - [x] Test product turned into the real `makroskop` product via the CMS.
 - [x] Inactive example product `przyklad` deleted (`book.png` is a real Makroskop photo and stays).
-- [ ] Activate BLIK and Przelewy24 in Stripe **live** mode; switch Netlify `STRIPE_SECRET_KEY` to the live key.
+- [ ] Activate BLIK and Przelewy24 in Stripe **live** mode; switch Netlify `STRIPE_SECRET_KEY` to a live **restricted key** with only "Checkout Sessions: Write" (Developers → API keys → Create restricted key), not the full secret key. If it leaks, it can only create and read checkout sessions. No code change needed.
 - [ ] In Stripe **live** mode, set the terms of service and privacy policy URLs (Settings → Business details → Public). Checkout requires terms consent and fails without them (done in the sandbox).
 - [ ] Legal items from "Before launch" above.
 - [ ] Later: webhook + order notification email (needs an email service).
