@@ -2,7 +2,7 @@
 import Link from '@components/Link.astro';
 import { getRelativeLocaleUrl } from 'astro:i18n';
 
-import Config from '../../astro.config.mjs';
+import { locales } from '../i18n.mjs';
 
 export interface Props {
     language: string;
@@ -10,7 +10,7 @@ export interface Props {
 
 const language = Astro.currentLocale;
 
-const localeSwitcherUrls = Config.i18n.locales
+const localeSwitcherUrls = locales
     .filter((locale) => locale !== language)
     .map((locale) => {
         return {

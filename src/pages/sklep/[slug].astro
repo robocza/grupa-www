@@ -1,0 +1,156 @@
+---
+import { Image, getImage } from 'astro:assets';
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/Container.astro";
+import Link from "@components/Link.astro";
+import CartLink from "@components/CartLink.astro";
+import { getActiveProducts, formatPrice, type Product } from "@lib/shop";
+
+export async function getStaticPaths() {
+    const products = await getActiveProducts();
+
+    return products.map(product => ({
+        params: { slug: product.slug }, props: { product },
+    }));
+}
+
+interface Props {
+    product: Product;
+}
+
+const { product } = Astro.props;
+const { name, images, variants } = product.data;
+const { Content } = await product.render();
+
+const imageWidth = 1000;
+const gallery = await Promise.all(images.map(async image => ({
+    src: (await getImage({ src: image.src, width: imageWidth, optimize: true })).src,
+    alt: image.alt,
+})));
+
+const options = await Promise.all(variants.map(async variant => ({
+    ...variant,
+    formattedPrice: formatPrice(variant.price, Astro.currentLocale),
+    imageSrc: variant.image ? (await getImage({ src: variant.image, width: imageWidth, optimize: true })).src : undefined,
+})));
+
+// Preselect the first available variant; if none is available, the product is sold out.
+const selected = options.find(option => option.available) ?? options[0];
+const soldOut = !selected.available;
+// Start with the selected variant's own image, if it has one; otherwise the cover.
+const initialImage = selected.image
+    ? { src: selected.image, alt: options.length > 1 ? `${name} — ${selected.label}` : name }
+    : images[0];
+---
+<Layout title={name}>
+    <Container>
+        <div class="mt-10 flex justify-between text-xl">
+            <Link url="/sklep" text="← Sklep" />
+            <CartLink />
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 xl:gap-12 mt-6">
+            <div>
+                <Image id="product-image" class="border-2 border-black aspect-square object-cover w-full" src={initialImage.src} alt={initialImage.alt} width={imageWidth} loading="eager" optimize data-cover-src={gallery[0].src} data-cover-alt={gallery[0].alt} />
+                {gallery.length > 1 && (
+                    <div class="grid grid-cols-4 gap-2 mt-2">
+                        {gallery.map((image, index) => (
+                            <button type="button" class="border-2 border-black hover:opacity-70" data-gallery-src={image.src} data-gallery-alt={image.alt} aria-label={`Pokaż zdjęcie ${index + 1}`}>
+                                <Image class="aspect-square object-cover w-full" src={images[index].src} alt="" width="250" optimize />
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
+            <div>
+                <h1 class="text-3xl md:text-4xl leading-normal">{name}</h1>
+                <p id="product-price" class="text-2xl uppercase leading-normal mt-2">{selected.formattedPrice}</p>
+
+                <form id="product-form" class="mt-6" data-product={product.slug}>
+                    {options.length > 1 && (
+                        <fieldset class="mb-6">
+                            <legend class="text-xl uppercase mb-2">Wariant</legend>
+                            <div class="flex flex-wrap gap-2">
+                                {options.map(option => (
+                                    <label class="border-2 border-black px-4 py-2 text-xl cursor-pointer has-[:checked]:bg-black has-[:checked]:text-white has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-40 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2">
+                                        <input
+                                            type="radio"
+                                            name="sku"
+                                            class="sr-only"
+                                            value={option.sku}
+                                            checked={option === selected}
+                                            disabled={!option.available}
+                                            data-price={option.formattedPrice}
+                                            data-image-src={option.imageSrc}
+                                            data-image-alt={`${name} — ${option.label}`}
+                                        />
+                                        <span class:list={{"line-through": !option.available}}>{option.label}</span>
+                                        {!option.available && <span class="sr-only"> (wyprzedane)</span>}
+                                    </label>
+                                ))}
+                            </div>
+                        </fieldset>
+                    )}
+                    {options.length === 1 && <input type="hidden" name="sku" value={selected.sku} />}
+
+                    <button type="submit" class="w-full sm:w-auto border-2 border-black bg-black text-white uppercase text-xl px-8 py-3 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-black disabled:hover:text-white" disabled={soldOut}>
+                        {soldOut ? "Wyprzedane" : "Dodaj do koszyka"}
+                    </button>
+                    <p id="product-added" class="text-xl mt-4" role="status"></p>
+                </form>
+
+                <article class="prose prose-lg mt-10">
+                    <Content />
+                </article>
+            </div>
+        </div>
+    </Container>
+</Layout>
+
+<script>
+    import {addToCart} from '@lib/cart';
+
+    const mainImage = document.getElementById('product-image') as HTMLImageElement | null;
+    const price = document.getElementById('product-price');
+    // Shown for variants without an image of their own.
+    const defaultImage = mainImage && {src: mainImage.dataset.coverSrc!, alt: mainImage.dataset.coverAlt ?? ''};
+
+    function showImage(src: string, alt: string) {
+        if (!mainImage) {
+            return;
+        }
+        mainImage.removeAttribute('srcset');
+        mainImage.src = src;
+        mainImage.alt = alt;
+    }
+
+    document.querySelectorAll<HTMLButtonElement>('[data-gallery-src]').forEach(button => {
+        button.addEventListener('click', () => showImage(button.dataset.gallerySrc!, button.dataset.galleryAlt ?? ''));
+    });
+
+    document.querySelectorAll<HTMLInputElement>('input[name="sku"][type="radio"]').forEach(input => {
+        input.addEventListener('change', () => {
+            if (price && input.dataset.price) {
+                price.textContent = input.dataset.price;
+            }
+            if (input.dataset.imageSrc) {
+                showImage(input.dataset.imageSrc, input.dataset.imageAlt ?? '');
+            } else if (defaultImage) {
+                showImage(defaultImage.src, defaultImage.alt);
+            }
+        });
+    });
+
+    const added = document.getElementById('product-added');
+
+    document.getElementById('product-form')?.addEventListener('submit', event => {
+        event.preventDefault();
+        const sku = new FormData(event.target as HTMLFormElement).get('sku');
+        if (typeof sku !== 'string') {
+            return;
+        }
+        addToCart(sku);
+        if (added) {
+            added.innerHTML = 'Dodano do koszyka. <a href="/sklep/koszyk" class="underline hover:text-white hover:bg-black">Przejdź do koszyka →</a>';
+        }
+    });
+</script>

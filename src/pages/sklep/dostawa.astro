@@ -1,0 +1,275 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/Container.astro";
+import Link from "@components/Link.astro";
+import CartLink from "@components/CartLink.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+import { SHIPPING, PICKUP_CONTACT, type DeliveryMethod } from "@lib/shipping";
+import { formatPrice } from "@lib/price";
+
+if (!import.meta.env.PUBLIC_INPOST_GEOWIDGET_TOKEN) {
+    console.warn('PUBLIC_INPOST_GEOWIDGET_TOKEN is not set: the Paczkomat map will not load.');
+}
+
+const methods = Object.entries(SHIPPING) as [DeliveryMethod, typeof SHIPPING[DeliveryMethod]][];
+const linkClass = "underline hover:text-white hover:bg-black";
+const locale = Astro.currentLocale;
+---
+<Layout title="Dostawa">
+    <Container>
+        <div class="mt-10 flex justify-between text-xl">
+            <Link url="/sklep/koszyk" text="← Koszyk" />
+            <CartLink />
+        </div>
+        <div class="mt-2">
+            <SectionHeader>
+                <Fragment slot="title">Dostawa</Fragment>
+            </SectionHeader>
+        </div>
+
+        <noscript>
+            <p class="text-2xl mt-6">Zamówienie wymaga włączonej obsługi JavaScript.</p>
+        </noscript>
+        <p id="delivery-cancelled" class="text-xl mt-6 border-2 border-black p-4" role="status" hidden>
+            Płatność została anulowana. Twój koszyk jest zachowany — możesz spróbować ponownie.
+        </p>
+        <p id="delivery-status" class="text-2xl mt-6" role="status">Wczytywanie koszyka…</p>
+
+        <form id="delivery-form" class="mt-6" hidden>
+            <fieldset>
+                <legend class="sr-only">Sposób dostawy</legend>
+                <div class="flex flex-col gap-4">
+                    {methods.map(([method, option]) => (
+                        <div class="border-2 border-black has-[:checked]:bg-black has-[:checked]:text-white">
+                            <label class="flex justify-between gap-4 p-4 text-xl cursor-pointer has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2">
+                                <span class="flex gap-3 items-baseline">
+                                    <input type="radio" name="method" value={method} class="accent-white" required />
+                                    {option.label}
+                                </span>
+                                <span class="shrink-0">{option.price === 0 ? "0 zł" : formatPrice(option.price, locale)}</span>
+                            </label>
+                        </div>
+                    ))}
+                </div>
+            </fieldset>
+
+            <div data-details="pickup" class="mt-4 text-lg" hidden>
+                <p>
+                    Termin odbioru umów mailowo: <a class={linkClass} href={`mailto:${PICKUP_CONTACT.email}`}>{PICKUP_CONTACT.email}</a>
+                    lub na Instagramie: <a class={linkClass} href={`https://www.instagram.com/${PICKUP_CONTACT.instagram}/`}>@{PICKUP_CONTACT.instagram}</a>.
+                </p>
+                <p>Apteka Designu, Mikołaja Kopernika 19A, 31-531 Kraków.</p>
+            </div>
+
+            <div data-details="paczkomat" class="mt-4" hidden>
+                <div id="point-selected" hidden>
+                    <p class="text-lg">Wybrany paczkomat:</p>
+                    <p class="text-xl"><strong id="point-id"></strong> <span id="point-address"></span></p>
+                    <button id="point-change" type="button" class={`text-lg mt-2 ${linkClass}`}>Zmień paczkomat</button>
+                </div>
+                <div id="point-picker">
+                    <p class="text-lg mb-2">Wybierz paczkomat na mapie:</p>
+                    <div id="geowidget" class="h-[500px] border-2 border-black"></div>
+                </div>
+            </div>
+
+            <div data-details="courier" class="mt-4 text-lg" hidden>
+                <p>Adres dostawy podasz w następnym kroku, przy płatności.</p>
+            </div>
+
+            <dl class="mt-8 text-xl flex flex-col items-end gap-1">
+                <div class="flex gap-4"><dt>Produkty:</dt><dd id="sum-products"></dd></div>
+                <div class="flex gap-4"><dt>Dostawa:</dt><dd id="sum-shipping">—</dd></div>
+                <div class="flex gap-4 text-2xl uppercase"><dt>Razem:</dt><dd id="sum-total"></dd></div>
+            </dl>
+
+            <div class="mt-6 flex flex-col items-end gap-4">
+                <p id="delivery-error" class="text-lg" role="alert"></p>
+                <button id="delivery-submit" type="submit" class="w-full sm:w-auto border-2 border-black bg-black text-white uppercase text-xl px-8 py-3 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-black disabled:hover:text-white" disabled>
+                    Przejdź do płatności
+                </button>
+            </div>
+        </form>
+    </Container>
+</Layout>
+
+<script>
+    import {getCart, fetchCatalog, getDelivery, saveDelivery} from '@lib/cart';
+    import {SHIPPING, isDeliveryMethod, type Delivery} from '@lib/shipping';
+    import {formatPrice} from '@lib/price';
+
+    const locale = document.documentElement.lang;
+
+    const GEOWIDGET_URL = 'https://geowidget.inpost.pl/inpost-geowidget';
+    const POINT_EVENT = 'onpointselect';
+
+    const status = document.getElementById('delivery-status')!;
+    const form = document.getElementById('delivery-form') as HTMLFormElement;
+    const error = document.getElementById('delivery-error')!;
+    const submit = document.getElementById('delivery-submit') as HTMLButtonElement;
+    const pointSelected = document.getElementById('point-selected')!;
+    const pointPicker = document.getElementById('point-picker')!;
+    const geowidgetContainer = document.getElementById('geowidget')!;
+
+    let subtotal = 0;
+    let delivery: Delivery | null = getDelivery();
+    // Remembered so switching to another method and back keeps the chosen locker.
+    let lastPoint = delivery?.point;
+
+    function render() {
+        const method = delivery?.method;
+
+        form.querySelectorAll<HTMLElement>('[data-details]').forEach(element => {
+            element.hidden = element.dataset.details !== method;
+        });
+        form.querySelectorAll<HTMLInputElement>('input[name="method"]').forEach(input => {
+            input.checked = input.value === method;
+        });
+
+        const point = delivery?.point;
+        pointSelected.hidden = !point;
+        pointPicker.hidden = !!point;
+        document.getElementById('point-id')!.textContent = point?.id ?? '';
+        document.getElementById('point-address')!.textContent = point?.address ?? '';
+        if (method === 'paczkomat' && !point) {
+            loadGeowidget();
+        }
+
+        const shipping = method ? SHIPPING[method].price : 0;
+        document.getElementById('sum-products')!.textContent = formatPrice(subtotal, locale);
+        document.getElementById('sum-shipping')!.textContent = method ? formatPrice(shipping, locale) : '—';
+        document.getElementById('sum-total')!.textContent = formatPrice(subtotal + shipping, locale);
+
+        const needsPoint = method === 'paczkomat' && !point;
+        error.textContent = needsPoint ? 'Wybierz paczkomat, aby przejść dalej.' : '';
+        submit.disabled = !method || needsPoint;
+    }
+
+    function setDelivery(next: Delivery) {
+        delivery = next;
+        saveDelivery(next);
+        render();
+    }
+
+    let geowidgetLoaded = false;
+
+    // The InPost script and map are only loaded once Paczkomat is chosen.
+    function loadGeowidget() {
+        if (geowidgetLoaded) {
+            return;
+        }
+        geowidgetLoaded = true;
+
+        const token = import.meta.env.PUBLIC_INPOST_GEOWIDGET_TOKEN;
+        if (!token) {
+            geowidgetContainer.textContent = 'Mapa paczkomatów jest chwilowo niedostępna.';
+            return;
+        }
+
+        const stylesheet = document.createElement('link');
+        stylesheet.rel = 'stylesheet';
+        stylesheet.href = `${GEOWIDGET_URL}.css`;
+        document.head.append(stylesheet);
+
+        const script = document.createElement('script');
+        script.src = `${GEOWIDGET_URL}.js`;
+        script.defer = true;
+        document.head.append(script);
+
+        const widget = document.createElement('inpost-geowidget');
+        widget.setAttribute('token', token);
+        widget.setAttribute('language', 'pl');
+        widget.setAttribute('config', 'parcelCollect');
+        widget.setAttribute('onpoint', POINT_EVENT);
+        widget.style.display = 'block';
+        widget.style.height = '100%';
+        widget.addEventListener(POINT_EVENT, event => {
+            const point = (event as CustomEvent).detail;
+            if (typeof point?.name !== 'string') {
+                return;
+            }
+            const address = [point.address?.line1, point.address?.line2].filter(Boolean).join(', ');
+            lastPoint = {id: point.name, address};
+            setDelivery({method: 'paczkomat', point: lastPoint});
+        });
+        geowidgetContainer.append(widget);
+    }
+
+    form.addEventListener('change', event => {
+        const input = event.target as HTMLInputElement;
+        if (input.name !== 'method' || !isDeliveryMethod(input.value)) {
+            return;
+        }
+        setDelivery({method: input.value, point: input.value === 'paczkomat' ? lastPoint : undefined});
+    });
+
+    document.getElementById('point-change')!.addEventListener('click', () => {
+        pointSelected.hidden = true;
+        pointPicker.hidden = false;
+        loadGeowidget();
+    });
+
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
+        if (!delivery) {
+            return;
+        }
+
+        submit.disabled = true;
+        error.textContent = '';
+        try {
+            const response = await fetch('/api/checkout', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({items: getCart(), delivery}),
+            });
+            const result = await response.json().catch(() => ({}));
+            if (response.ok && result.url) {
+                window.location.href = result.url;
+                return;
+            }
+            error.textContent = result.error ?? 'Nie udało się rozpocząć płatności. Spróbuj ponownie.';
+        } catch {
+            error.textContent = 'Brak połączenia. Spróbuj ponownie.';
+        }
+        submit.disabled = false;
+    });
+
+    // Stripe sends the customer back here with ?anulowano when they cancel the payment.
+    const queryParameters = new URLSearchParams(window.location.search);
+    if (queryParameters.has('anulowano')) {
+        document.getElementById('delivery-cancelled')!.hidden = false;
+        queryParameters.delete('anulowano');
+        history.replaceState(null, '', window.location.pathname + (queryParameters.size ? `?${queryParameters}` : ''));
+    }
+
+    // Coming back from Stripe with the back button restores the page with the button disabled.
+    window.addEventListener('pageshow', event => {
+        if (event.persisted && !form.hidden) {
+            render();
+        }
+    });
+
+    fetchCatalog()
+        .then(catalog => {
+            const lines = getCart();
+            const items = lines.map(line => ({...line, item: catalog[line.sku]}));
+
+            if (lines.length === 0) {
+                status.innerHTML = 'Koszyk jest pusty. <a href="/sklep" class="underline hover:text-white hover:bg-black">Wróć do sklepu</a>.';
+                return;
+            }
+            if (items.some(({item}) => !item?.available)) {
+                status.innerHTML = 'W koszyku są niedostępne produkty. <a href="/sklep/koszyk" class="underline hover:text-white hover:bg-black">Wróć do koszyka</a>.';
+                return;
+            }
+
+            subtotal = items.reduce((sum, {item, quantity}) => sum + item!.price * quantity, 0);
+            status.hidden = true;
+            form.hidden = false;
+            render();
+        })
+        .catch(() => {
+            status.textContent = 'Nie udało się wczytać koszyka. Odśwież stronę.';
+        });
+</script>
