@@ -62,6 +62,8 @@ const qtyButton = "border-2 border-black w-10 h-10 text-xl hover:bg-black hover:
     import {getCart, setQuantity, removeFromCart, onCartChange, fetchCatalog, MAX_QUANTITY, type Catalog} from '@lib/cart';
     import {formatPrice} from '@lib/price';
 
+    const locale = document.documentElement.lang;
+
     const status = document.getElementById('cart-status')!;
     const list = document.getElementById('cart-lines')!;
     const summary = document.getElementById('cart-summary')!;
@@ -92,7 +94,7 @@ const qtyButton = "border-2 border-black w-10 h-10 text-xl hover:bg-black hover:
                 link.href = item.url;
                 (find('image') as HTMLImageElement).src = item.image;
                 find('label').textContent = item.label ?? '';
-                find('unit-price').textContent = `${formatPrice(item.price)} / szt.`;
+                find('unit-price').textContent = `${formatPrice(item.price, locale)} / szt.`;
             } else {
                 link.removeAttribute('href');
                 find('image').hidden = true;
@@ -107,7 +109,7 @@ const qtyButton = "border-2 border-black w-10 h-10 text-xl hover:bg-black hover:
 
             if (available) {
                 sum += item.price * quantity;
-                find('line-total').textContent = formatPrice(item.price * quantity);
+                find('line-total').textContent = formatPrice(item.price * quantity, locale);
             } else {
                 hasUnavailable = true;
                 find('unavailable').hidden = false;
@@ -118,7 +120,7 @@ const qtyButton = "border-2 border-black w-10 h-10 text-xl hover:bg-black hover:
             list.append(row);
         }
 
-        total.textContent = formatPrice(sum);
+        total.textContent = formatPrice(sum, locale);
         next.disabled = hasUnavailable;
         blocked.hidden = !hasUnavailable;
     }

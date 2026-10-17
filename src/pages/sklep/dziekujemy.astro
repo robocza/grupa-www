@@ -31,6 +31,7 @@ const deliveryMethod = session?.metadata?.delivery_method;
 const method = isDeliveryMethod(deliveryMethod) ? deliveryMethod : null;
 const lines = session?.line_items?.data ?? [];
 const linkClass = "underline hover:text-white hover:bg-black";
+const locale = Astro.currentLocale;
 ---
 <Layout title="Dziękujemy">
     <Container>
@@ -67,7 +68,7 @@ const linkClass = "underline hover:text-white hover:bg-black";
                     {lines.map(line => (
                         <li class="flex justify-between gap-4 py-2 border-b-2 border-black">
                             <span>{line.description} × {line.quantity}</span>
-                            <span class="shrink-0">{formatPrice(line.amount_total)}</span>
+                            <span class="shrink-0">{formatPrice(line.amount_total, locale)}</span>
                         </li>
                     ))}
                     {method && (
@@ -80,12 +81,12 @@ const linkClass = "underline hover:text-white hover:bg-black";
                                     </span>
                                 )}
                             </span>
-                            <span class="shrink-0">{formatPrice(session.shipping_cost?.amount_total ?? 0)}</span>
+                            <span class="shrink-0">{formatPrice(session.shipping_cost?.amount_total ?? 0, locale)}</span>
                         </li>
                     )}
                     <li class="flex justify-between gap-4 py-2 text-2xl uppercase">
                         <span>Razem</span>
-                        <span class="shrink-0">{formatPrice(session.amount_total ?? 0)}</span>
+                        <span class="shrink-0">{formatPrice(session.amount_total ?? 0, locale)}</span>
                     </li>
                 </ul>
 

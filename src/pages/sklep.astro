@@ -7,6 +7,7 @@ import CartLink from "@components/CartLink.astro";
 import { getActiveProducts, isAvailable, lowestPrice, hasPriceRange, formatPrice } from "@lib/shop";
 
 const products = await getActiveProducts();
+const locale = Astro.currentLocale;
 ---
 <Layout title="Sklep">
     <Container>
@@ -39,7 +40,7 @@ const products = await getActiveProducts();
                                 {product.data.name}
                             </h2>
                             <p class="text-xl uppercase leading-normal">
-                                {hasPriceRange(product) && "od "}{formatPrice(lowestPrice(product))}
+                                {hasPriceRange(product) && "od "}{formatPrice(lowestPrice(product), locale)}
                             </p>
                             {product.data.summary && (
                                 <p class="text-lg leading-normal">{product.data.summary}</p>

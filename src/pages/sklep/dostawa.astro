@@ -13,6 +13,7 @@ if (!import.meta.env.PUBLIC_INPOST_GEOWIDGET_TOKEN) {
 
 const methods = Object.entries(SHIPPING) as [DeliveryMethod, typeof SHIPPING[DeliveryMethod]][];
 const linkClass = "underline hover:text-white hover:bg-black";
+const locale = Astro.currentLocale;
 ---
 <Layout title="Dostawa">
     <Container>
@@ -45,7 +46,7 @@ const linkClass = "underline hover:text-white hover:bg-black";
                                     <input type="radio" name="method" value={method} class="accent-white" required />
                                     {option.label}
                                 </span>
-                                <span class="shrink-0">{option.price === 0 ? "0 zł" : formatPrice(option.price)}</span>
+                                <span class="shrink-0">{option.price === 0 ? "0 zł" : formatPrice(option.price, locale)}</span>
                             </label>
                         </div>
                     ))}
@@ -97,6 +98,8 @@ const linkClass = "underline hover:text-white hover:bg-black";
     import {SHIPPING, isDeliveryMethod, type Delivery} from '@lib/shipping';
     import {formatPrice} from '@lib/price';
 
+    const locale = document.documentElement.lang;
+
     const GEOWIDGET_URL = 'https://geowidget.inpost.pl/inpost-geowidget';
     const POINT_EVENT = 'onpointselect';
 
@@ -133,9 +136,9 @@ const linkClass = "underline hover:text-white hover:bg-black";
         }
 
         const shipping = method ? SHIPPING[method].price : 0;
-        document.getElementById('sum-products')!.textContent = formatPrice(subtotal);
-        document.getElementById('sum-shipping')!.textContent = method ? formatPrice(shipping) : '—';
-        document.getElementById('sum-total')!.textContent = formatPrice(subtotal + shipping);
+        document.getElementById('sum-products')!.textContent = formatPrice(subtotal, locale);
+        document.getElementById('sum-shipping')!.textContent = method ? formatPrice(shipping, locale) : '—';
+        document.getElementById('sum-total')!.textContent = formatPrice(subtotal + shipping, locale);
 
         const needsPoint = method === 'paczkomat' && !point;
         error.textContent = needsPoint ? 'Wybierz paczkomat, aby przejść dalej.' : '';

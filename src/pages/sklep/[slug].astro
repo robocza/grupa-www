@@ -30,7 +30,7 @@ const gallery = await Promise.all(images.map(async image => ({
 
 const options = await Promise.all(variants.map(async variant => ({
     ...variant,
-    formattedPrice: formatPrice(variant.price),
+    formattedPrice: formatPrice(variant.price, Astro.currentLocale),
     imageSrc: variant.image ? (await getImage({ src: variant.image, width: imageWidth, optimize: true })).src : undefined,
 })));
 
