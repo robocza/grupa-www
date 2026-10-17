@@ -37,7 +37,7 @@ export function isAvailable(product: Product): boolean {
 }
 
 // Lowest price among available variants, or among all variants if none are available.
-export function minPrice(product: Product): number {
+export function lowestPrice(product: Product): number {
     const available = product.data.variants.filter(variant => variant.available);
 
     return Math.min(...(available.length ? available : product.data.variants).map(variant => variant.price));

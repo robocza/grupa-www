@@ -233,11 +233,11 @@ const linkClass = "underline hover:text-white hover:bg-black";
     });
 
     // Stripe sends the customer back here with ?anulowano when they cancel the payment.
-    const params = new URLSearchParams(window.location.search);
-    if (params.has('anulowano')) {
+    const queryParameters = new URLSearchParams(window.location.search);
+    if (queryParameters.has('anulowano')) {
         document.getElementById('delivery-cancelled')!.hidden = false;
-        params.delete('anulowano');
-        history.replaceState(null, '', window.location.pathname + (params.size ? `?${params}` : ''));
+        queryParameters.delete('anulowano');
+        history.replaceState(null, '', window.location.pathname + (queryParameters.size ? `?${queryParameters}` : ''));
     }
 
     // Coming back from Stripe with the back button restores the page with the button disabled.
@@ -261,7 +261,7 @@ const linkClass = "underline hover:text-white hover:bg-black";
                 return;
             }
 
-            subtotal = items.reduce((sum, {item, qty}) => sum + item!.price * qty, 0);
+            subtotal = items.reduce((sum, {item, quantity}) => sum + item!.price * quantity, 0);
             status.hidden = true;
             form.hidden = false;
             render();

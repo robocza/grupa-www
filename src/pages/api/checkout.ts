@@ -65,7 +65,7 @@ export const POST: APIRoute = async ({request}) => {
             currency: 'pln',
             payment_method_types: ['card', 'blik', 'p24'],
             line_items: order.lines.map(line => ({
-                quantity: line.qty,
+                quantity: line.quantity,
                 price_data: {
                     currency: 'pln',
                     unit_amount: line.price,

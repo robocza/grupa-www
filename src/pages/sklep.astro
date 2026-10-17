@@ -4,7 +4,7 @@ import Layout from "@layouts/Layout.astro";
 import Container from "@components/Container.astro";
 import SectionHeader from "@components/SectionHeader.astro";
 import CartLink from "@components/CartLink.astro";
-import { getActiveProducts, isAvailable, minPrice, hasPriceRange, formatPrice } from "@lib/shop";
+import { getActiveProducts, isAvailable, lowestPrice, hasPriceRange, formatPrice } from "@lib/shop";
 
 const products = await getActiveProducts();
 ---
@@ -39,7 +39,7 @@ const products = await getActiveProducts();
                                 {product.data.name}
                             </h2>
                             <p class="text-xl uppercase leading-normal">
-                                {hasPriceRange(product) && "od "}{formatPrice(minPrice(product))}
+                                {hasPriceRange(product) && "od "}{formatPrice(lowestPrice(product))}
                             </p>
                             {product.data.summary && (
                                 <p class="text-lg leading-normal">{product.data.summary}</p>

@@ -57,12 +57,12 @@ const productsCollection = defineCollection({
             image: image().optional(),
             available: z.boolean().default(true),
         })).min(1),
-    }).superRefine((product, ctx) => {
+    }).superRefine((product, context) => {
         const skus = new Set<string>();
 
-        product.variants.forEach((variant, i) => {
+        product.variants.forEach((variant, index) => {
             if (skus.has(variant.sku)) {
-                ctx.addIssue({code: z.ZodIssueCode.custom, path: ['variants', i, 'sku'], message: `Duplicate SKU "${variant.sku}"`});
+                context.addIssue({code: z.ZodIssueCode.custom, path: ['variants', index, 'sku'], message: `Duplicate SKU "${variant.sku}"`});
             }
             skus.add(variant.sku);
         });

@@ -53,9 +53,9 @@ const initialImage = selected.image
                 <Image id="product-image" class="border-2 border-black aspect-square object-cover w-full" src={initialImage.src} alt={initialImage.alt} width={imageWidth} loading="eager" optimize data-cover-src={gallery[0].src} data-cover-alt={gallery[0].alt} />
                 {gallery.length > 1 && (
                     <div class="grid grid-cols-4 gap-2 mt-2">
-                        {gallery.map((image, i) => (
-                            <button type="button" class="border-2 border-black hover:opacity-70" data-gallery-src={image.src} data-gallery-alt={image.alt} aria-label={`Pokaż zdjęcie ${i + 1}`}>
-                                <Image class="aspect-square object-cover w-full" src={images[i].src} alt="" width="250" optimize />
+                        {gallery.map((image, index) => (
+                            <button type="button" class="border-2 border-black hover:opacity-70" data-gallery-src={image.src} data-gallery-alt={image.alt} aria-label={`Pokaż zdjęcie ${index + 1}`}>
+                                <Image class="aspect-square object-cover w-full" src={images[index].src} alt="" width="250" optimize />
                             </button>
                         ))}
                     </div>

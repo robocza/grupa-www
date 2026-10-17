@@ -44,10 +44,10 @@ const qtyButton = "border-2 border-black w-10 h-10 text-xl hover:bg-black hover:
                     <p data-unit-price class="text-lg"></p>
                     <p data-unavailable class="text-lg uppercase" hidden>Niedostępny</p>
                 </div>
-                <div data-qty>
+                <div data-quantity>
                     <div class="flex items-center gap-2">
                         <button data-decrease type="button" class={qtyButton} aria-label="Zmniejsz ilość">−</button>
-                        <span data-qty-value class="w-8 text-center text-xl" aria-live="polite"></span>
+                        <span data-quantity-value class="w-8 text-center text-xl" aria-live="polite"></span>
                         <button data-increase type="button" class={qtyButton} aria-label="Zwiększ ilość">+</button>
                     </div>
                 </div>
@@ -59,7 +59,7 @@ const qtyButton = "border-2 border-black w-10 h-10 text-xl hover:bg-black hover:
 </Layout>
 
 <script>
-    import {getCart, setQty, removeFromCart, onCartChange, fetchCatalog, MAX_QTY, type Catalog} from '@lib/cart';
+    import {getCart, setQuantity, removeFromCart, onCartChange, fetchCatalog, MAX_QUANTITY, type Catalog} from '@lib/cart';
     import {formatPrice} from '@lib/price';
 
     const status = document.getElementById('cart-status')!;
@@ -80,7 +80,7 @@ const qtyButton = "border-2 border-black w-10 h-10 text-xl hover:bg-black hover:
         status.hidden = lines.length > 0;
         summary.hidden = lines.length === 0;
 
-        for (const {sku, qty} of lines) {
+        for (const {sku, quantity} of lines) {
             const item = catalog[sku];
             const available = item?.available === true;
             const row = template.content.firstElementChild!.cloneNode(true) as HTMLElement;
@@ -98,20 +98,20 @@ const qtyButton = "border-2 border-black w-10 h-10 text-xl hover:bg-black hover:
                 find('image').hidden = true;
             }
 
-            find('qty-value').textContent = String(qty);
-            (find('decrease') as HTMLButtonElement).disabled = qty <= 1;
-            (find('increase') as HTMLButtonElement).disabled = qty >= MAX_QTY;
-            find('decrease').addEventListener('click', () => setQty(sku, qty - 1));
-            find('increase').addEventListener('click', () => setQty(sku, qty + 1));
+            find('quantity-value').textContent = String(quantity);
+            (find('decrease') as HTMLButtonElement).disabled = quantity <= 1;
+            (find('increase') as HTMLButtonElement).disabled = quantity >= MAX_QUANTITY;
+            find('decrease').addEventListener('click', () => setQuantity(sku, quantity - 1));
+            find('increase').addEventListener('click', () => setQuantity(sku, quantity + 1));
             find('remove').addEventListener('click', () => removeFromCart(sku));
 
             if (available) {
-                sum += item.price * qty;
-                find('line-total').textContent = formatPrice(item.price * qty);
+                sum += item.price * quantity;
+                find('line-total').textContent = formatPrice(item.price * quantity);
             } else {
                 hasUnavailable = true;
                 find('unavailable').hidden = false;
-                find('qty').hidden = true;
+                find('quantity').hidden = true;
                 find('line-total').textContent = '';
             }
 

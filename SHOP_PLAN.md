@@ -112,7 +112,7 @@ Decisions made along the way:
 - Netlify adapter `@astrojs/netlify` 5.x (Astro 4), `output: "hybrid"`: pages are static, only `/api/checkout` and `/sklep/dziekujemy` run on demand.
 - Components rendered on demand must not import `astro.config.mjs` (crashes the function); locales live in `src/i18n.mjs`.
 - Shop is Polish only and not linked from the homepage/nav (owner's choice for now).
-- Max 10 pcs per cart line (`MAX_QTY` in `src/lib/cart.ts`). SKUs must be unique across products (build fails otherwise).
+- Max 10 pcs per cart line (`MAX_QUANTITY` in `src/lib/cart.ts`). SKUs must be unique across products (build fails otherwise).
 - Sveltia: stock photos and URL input disabled (Astro `image()` needs files in the repo); empty optional fields omitted.
 
 Local dev:

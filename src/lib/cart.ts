@@ -5,7 +5,7 @@ import {isDeliveryMethod, type Delivery} from './shipping';
 
 export interface CartLine {
     sku: string;
-    qty: number;
+    quantity: number;
 }
 
 export interface CatalogItem {
@@ -19,7 +19,7 @@ export interface CatalogItem {
 
 export type Catalog = Record<string, CatalogItem>;
 
-export const MAX_QTY = 10;
+export const MAX_QUANTITY = 10;
 
 const STORAGE_KEY = 'gr-cart';
 const CHANGE_EVENT = 'cart:change';
@@ -29,7 +29,7 @@ export function getCart(): CartLine[] {
         const lines = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]');
 
         return Array.isArray(lines)
-            ? lines.filter(line => typeof line?.sku === 'string' && Number.isInteger(line?.qty) && line.qty > 0)
+            ? lines.filter(line => typeof line?.sku === 'string' && Number.isInteger(line?.quantity) && line.quantity > 0)
             : [];
     } catch {
         return [];
@@ -45,24 +45,24 @@ function saveCart(lines: CartLine[]): void {
     window.dispatchEvent(new CustomEvent(CHANGE_EVENT));
 }
 
-function clampQty(qty: number): number {
-    return Math.min(MAX_QTY, Math.max(1, Math.floor(qty)));
+function clampQuantity(quantity: number): number {
+    return Math.min(MAX_QUANTITY, Math.max(1, Math.floor(quantity)));
 }
 
-export function addToCart(sku: string, qty = 1): void {
+export function addToCart(sku: string, quantity = 1): void {
     const lines = getCart();
     const line = lines.find(line => line.sku === sku);
 
     if (line) {
-        line.qty = clampQty(line.qty + qty);
+        line.quantity = clampQuantity(line.quantity + quantity);
     } else {
-        lines.push({sku, qty: clampQty(qty)});
+        lines.push({sku, quantity: clampQuantity(quantity)});
     }
     saveCart(lines);
 }
 
-export function setQty(sku: string, qty: number): void {
-    saveCart(getCart().map(line => line.sku === sku ? {...line, qty: clampQty(qty)} : line));
+export function setQuantity(sku: string, quantity: number): void {
+    saveCart(getCart().map(line => line.sku === sku ? {...line, quantity: clampQuantity(quantity)} : line));
 }
 
 export function removeFromCart(sku: string): void {
@@ -74,7 +74,7 @@ export function clearCart(): void {
 }
 
 export function cartCount(): number {
-    return getCart().reduce((sum, line) => sum + line.qty, 0);
+    return getCart().reduce((sum, line) => sum + line.quantity, 0);
 }
 
 // Calls `callback` when the cart changes in this tab or another one.

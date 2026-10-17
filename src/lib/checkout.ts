@@ -1,4 +1,4 @@
-import {MAX_QTY} from './cart';
+import {MAX_QUANTITY} from './cart';
 import {isDeliveryMethod, type Delivery} from './shipping';
 
 // Validation of the order the browser sends to /api/checkout. Only SKUs, quantities and
@@ -14,7 +14,7 @@ export interface OrderLine {
     sku: string;
     name: string;
     price: number;
-    qty: number;
+    quantity: number;
 }
 
 export interface Order {
@@ -44,23 +44,23 @@ export function parseOrder(body: unknown, lookup: (sku: string) => CatalogLookup
 
     const quantities = new Map<string, number>();
     for (const item of items) {
-        const {sku, qty} = (item ?? {}) as {sku?: unknown, qty?: unknown};
-        if (typeof sku !== 'string' || !Number.isInteger(qty) || (qty as number) < 1) {
+        const {sku, quantity} = (item ?? {}) as {sku?: unknown, quantity?: unknown};
+        if (typeof sku !== 'string' || !Number.isInteger(quantity) || (quantity as number) < 1) {
             return {error: 'Nieprawidłowe zamówienie.'};
         }
-        quantities.set(sku, (quantities.get(sku) ?? 0) + (qty as number));
+        quantities.set(sku, (quantities.get(sku) ?? 0) + (quantity as number));
     }
 
     const lines: OrderLine[] = [];
-    for (const [sku, qty] of quantities) {
+    for (const [sku, quantity] of quantities) {
         const item = lookup(sku);
         if (!item || !item.available) {
             return {error: 'Niektóre produkty w koszyku są niedostępne. Wróć do koszyka.'};
         }
-        if (qty > MAX_QTY) {
-            return {error: `Możesz zamówić maksymalnie ${MAX_QTY} szt. jednego produktu.`};
+        if (quantity > MAX_QUANTITY) {
+            return {error: `Możesz zamówić maksymalnie ${MAX_QUANTITY} szt. jednego produktu.`};
         }
-        lines.push({sku, name: item.name, price: item.price, qty});
+        lines.push({sku, name: item.name, price: item.price, quantity});
     }
 
     const {method, point} = (delivery ?? {}) as {method?: unknown, point?: {id?: unknown, address?: unknown}};
