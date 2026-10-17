@@ -104,7 +104,7 @@ https://deploy-preview-6--fastidious-moxie-126f16.netlify.app).
 | 6. Delivery + Geowidget | Done | `src/pages/sklep/dostawa.astro`, prices in `src/lib/shipping.ts` |
 | 7. Checkout function | Done, tested on preview (test mode) | `src/pages/api/checkout.ts`, `src/lib/checkout.ts` |
 | 8. Success/cancel | Done; webhook skipped for now | `src/pages/sklep/dziekujemy.astro`, cancel -> `/sklep/dostawa/?anulowano` |
-| 9. Gitea migration | Not started | see below |
+| 9. Gitea migration | In progress: repo migrated, push mirror works, local `origin` points to Gitea | see below |
 
 Decisions made along the way:
 
@@ -130,18 +130,21 @@ Local dev:
 - [ ] Legal items from "Before launch" above.
 - [ ] Later: webhook + order notification email (needs an email service).
 
-### Step 9 (Gitea), next session
+### Step 9 (Gitea)
+
+Repo: `grupa-robocza/grupa-www` on Gitea (private), SSH `git@git.robocza.org:grupa-robocza/grupa-www.git`.
+GitHub `robocza/grupa-www` (public) is only updated by the push mirror. Don't push to it, and don't use the CMS until it is switched to Gitea: commits made on GitHub are overwritten by the next mirror sync.
 
 Blocker: `.github/workflows/update_submodule.yml` commits to `main` on GitHub when the blog repo changes; a Gitea push mirror would overwrite those commits. Proposal: remove it (and `dispatch_update.yml` in the blog repo) and update the blog submodule manually (`make git-submodule-sync`).
 
 Owner's tasks:
 
-1. Gitea: create the org, migrate `robocza/grupa-www` from GitHub as a normal repo (not a mirror), all branches.
-2. Push mirror to `https://github.com/robocza/grupa-www.git` with a GitHub fine-grained PAT (Contents RW), sync on push.
+1. ~~Gitea: create the org, migrate the repo from GitHub as a normal repo (not a mirror), all branches.~~ Done.
+2. ~~Push mirror to `https://github.com/robocza/grupa-www.git` with a GitHub fine-grained PAT (Contents + Workflows RW, as the password), sync on push.~~ Done. Renew the token before it expires, or GitHub/Netlify stop updating.
 3. Enable CORS in `app.ini` (preflight currently returns 405):
    `[cors] ENABLED = true`, `ALLOW_DOMAIN` = site, `https://gr.local`, preview URLs; `METHODS = GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS`; `HEADERS = Content-Type,User-Agent,Authorization`.
 4. OAuth2 app (not confidential), redirect URIs `https://grupa.robocza.org/admin/`, `https://gr.local/admin/index.html`, preview `/admin/`. Share the Client ID.
 5. Editors: Gitea accounts with write access; branch protection with unprotected file pattern `src/content/products/**` (verify it applies to API commits).
-6. Point local clones at Gitea; stop pushing to GitHub directly.
+6. Point local clones at Gitea; stop pushing to GitHub directly. (Done for the owner's checkout: `origin` = Gitea, `github` remote is fetch-only.)
 
-Then (code): switch `public/admin/config.yml` to `backend: gitea` with `repo`, `base_url: https://git.robocza.org`, `api_root: https://git.robocza.org/api/v1`, `app_id`, production `branch`; remove the GitHub workflow; repoint the local `origin` remote.
+Then (code): switch `public/admin/config.yml` to `backend: gitea` with `repo`, `base_url: https://git.robocza.org`, `api_root: https://git.robocza.org/api/v1`, `app_id`, production `branch`; remove the GitHub workflow; make GitHub private too if the code should not be public.
