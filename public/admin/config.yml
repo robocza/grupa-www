@@ -8,7 +8,9 @@ backend:
   repo: grupa-robocza/grupa-www
   base_url: https://git.robocza.org
   api_root: https://git.robocza.org/api/v1
-  # TODO: add `app_id` (OAuth2 Client ID from Gitea) to enable "Sign In with Gitea".
+  # OAuth2 app of the grupa-robocza org (public client, PKCE). Redirect URIs registered there:
+  # https://grupa.robocza.org/admin/, https://gr.local/admin/index.html, deploy preview /admin/.
+  app_id: 4099c314-d44f-42a3-951a-f9fd9fc34ea5
   # TODO: testing only — set to `main` (Netlify's production branch) when merging.
   branch: feature/shop
 

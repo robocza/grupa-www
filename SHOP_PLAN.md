@@ -104,7 +104,7 @@ https://deploy-preview-6--fastidious-moxie-126f16.netlify.app).
 | 6. Delivery + Geowidget | Done | `src/pages/sklep/dostawa.astro`, prices in `src/lib/shipping.ts` |
 | 7. Checkout function | Done, tested on preview (test mode) | `src/pages/api/checkout.ts`, `src/lib/checkout.ts` |
 | 8. Success/cancel | Done; webhook skipped for now | `src/pages/sklep/dziekujemy.astro`, cancel -> `/sklep/dostawa/?anulowano` |
-| 9. Gitea migration | In progress: repo, mirror, CORS, CMS backend done; OAuth Client ID pending | see below |
+| 9. Gitea migration | Done (2026-10-17); merge to `main` pending | see below |
 
 Decisions made along the way:
 
@@ -126,7 +126,8 @@ Local dev:
 
 - [ ] Set `branch: main` in `public/admin/config.yml` (currently `feature/shop` for testing).
 - [ ] Merge on Gitea (not with GitHub's merge button; the mirror would overwrite it).
-- [ ] Delete test product `testowy-produkt` (+ `images/book.png`); keep or delete the inactive template `przyklad`.
+- [x] Test product turned into the real `makroskop` product via the CMS.
+- [ ] `makroskop` still uses the test image `images/book.png` as its main image; replace it, then delete the file. Keep or delete the inactive template `przyklad`.
 - [ ] Activate BLIK and Przelewy24 in Stripe **live** mode; switch Netlify `STRIPE_SECRET_KEY` to the live key.
 - [ ] Legal items from "Before launch" above.
 - [ ] Later: webhook + order notification email (needs an email service).
@@ -144,10 +145,10 @@ Owner's tasks:
 2. ~~Push mirror to `https://github.com/robocza/grupa-www.git` with a GitHub fine-grained PAT (Contents + Workflows RW, as the password), sync on push.~~ Done. Renew the token before it expires, or GitHub/Netlify stop updating.
 3. ~~Enable CORS~~ Done, via `GITEA__cors__*` environment variables in Coolify (Gitea's compose file):
    `[cors] ENABLED = true`, `ALLOW_DOMAIN` = site, `https://gr.local`, preview URLs; `METHODS = GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS`; `HEADERS = Content-Type,User-Agent,Authorization`.
-4. OAuth2 app under the `grupa-robocza` org (not confidential), redirect URIs `https://grupa.robocza.org/admin/`, `https://gr.local/admin/index.html`, preview `/admin/`. Share the Client ID.
+4. ~~OAuth2 app~~ Done (`app_id` in `public/admin/config.yml`). It's under the `grupa-robocza` org (not confidential), redirect URIs `https://grupa.robocza.org/admin/`, `https://gr.local/admin/index.html`, preview `/admin/`. Share the Client ID.
 5. Editors: Gitea accounts with write access; branch protection with unprotected file pattern `src/content/products/**` (verify it applies to API commits).
 6. Point local clones at Gitea; stop pushing to GitHub directly. (Done for the owner's checkout: `origin` = Gitea, `github` remote is fetch-only.)
 
-Then (code): ~~switch `public/admin/config.yml` to `backend: gitea`~~ (done; token sign-in works without `app_id`), add `app_id` once the Client ID exists, set `branch: main` at merge. Make GitHub private too if the code should not be public.
+Then (code): ~~switch `public/admin/config.yml` to `backend: gitea`~~ and ~~add `app_id`~~ (done; "Sign In with Gitea" tested), set `branch: main` at merge. Add new deploy-preview or site URLs to both the OAuth app's redirect URIs and `GITEA__cors__ALLOW_DOMAIN` if the CMS should work there. Make GitHub private too if the code should not be public.
 
 Later: reintroduce automatic blog submodule updates with Gitea Actions (needs a runner).
