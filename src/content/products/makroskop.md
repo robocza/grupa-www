@@ -28,3 +28,5 @@ Format: 17x22 cm;
 Ilość stron: 108;
 42 kolorowe ilustracje;
 Druk offsetowy na papierze Arena Rough Natural 300g.
+
+Więcej szczegółów na: https://makroskop.robocza.org
