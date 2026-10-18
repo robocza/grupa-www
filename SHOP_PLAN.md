@@ -61,7 +61,7 @@ Context for adding a small shop to this Astro site. These decisions were made in
 
 ## Environment variables (Netlify)
 
-- `STRIPE_SECRET_KEY` (the webhook and its secret will live in a separate repository, see "Next: CMS and content repositories")
+- `STRIPE_SECRET_KEY` (the webhook and its secret will live in a separate repository, see "CMS and content repositories")
 - `PUBLIC_INPOST_GEOWIDGET_TOKEN` (from the InPost business account)
 - Owner notification settings (email provider / address) — TBD
 
@@ -124,7 +124,8 @@ Local dev:
 
 ### Before merging / launch
 
-- [ ] Move the CMS out of this repo (see "Next: CMS and content repositories"); `public/admin/` goes away.
+- [x] CMS moved to grupa-cms (cms.robocza.org), content to grupa-content, synced here by the "Sync content" workflow (see "CMS and content repositories").
+- [ ] After merging: check that a CMS save triggers the webhook and the sync commits to `main` (until then deliveries fail because the workflow isn't on `main`).
 - [ ] Merge on Gitea (not with GitHub's merge button; the mirror would overwrite it).
 - [x] Test product turned into the real `makroskop` product via the CMS.
 - [x] Inactive example product `przyklad` deleted (`book.png` is a real Makroskop photo and stays).
@@ -154,7 +155,7 @@ Then (code): ~~switch `public/admin/config.yml` to `backend: gitea`~~ and ~~add 
 
 Later: reintroduce automatic blog submodule updates with Gitea Actions (needs a runner).
 
-## Next: CMS and content repositories (decided 2026-10-18)
+## CMS and content repositories (set up and tested 2026-10-18)
 
 Goal: editors never get access to this repo, and editing stays easy.
 
