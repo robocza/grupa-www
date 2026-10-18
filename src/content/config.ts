@@ -32,8 +32,11 @@ const teamCollection = defineCollection({
     }),
 });
 
-// Shop products, edited via Sveltia CMS. Entry slug comes from the file name.
-// Description is the Markdown body. Images live in `src/content/products/images/`.
+// Shop products, edited through the CMS at cms.robocza.org and stored in the
+// grupa-robocza/grupa-content repository; the "Sync content" workflow copies them here.
+// Don't edit them here: the next sync overwrites them. Keep the fields in sync with the CMS
+// config (grupa-robocza/grupa-cms, public/config.yml). Entry slug comes from the file name.
+// Description is the Markdown body. Images live in `products/images/`.
 // Prices are in PLN grosze (4900 = 49,00 zł); the checkout function reads them from here,
 // never from the browser.
 const productsCollection = defineCollection({

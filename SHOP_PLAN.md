@@ -158,12 +158,11 @@ Later: reintroduce automatic blog submodule updates with Gitea Actions (needs a 
 
 Goal: editors never get access to this repo, and editing stays easy.
 
-- `grupa-robocza/content` (editors have write access): data only, e.g. `products/*.md` and `products/images/`, later the blog and other content types. Start from the current state of `src/content/products/` (history not needed).
-- `grupa-robocza/cms` (admins only): Sveltia `index.html` (pinned, with SRI) and `config.yml`, backend pointing at the content repo. Hosted as a static site at https://cms.robocza.org, preferably on Coolify; no build step, and it only redeploys when the CMS config changes, not when content is edited.
-- This repo fetches the latest content before `astro build` (Gitea archive API with a read-only token in Netlify env) into `src/content/products/`, which becomes gitignored. Content collections, the schema and image optimisation stay as they are.
-- A Gitea webhook on the content repo calls a Netlify build hook, so every content save rebuilds the site.
-- Remove `public/admin/` here. Update the OAuth app redirect URI to `https://cms.robocza.org/` and the Gitea CORS list to `https://cms.robocza.org`.
-- The Zod schema (here) and `config.yml` (cms repo) must be kept in sync by hand; note that in both repos.
+- `grupa-robocza/grupa-content` (editors have write access): data only, `products/*.md` and `products/images/`, later the blog and other content types. Set up with the current products.
+- `grupa-robocza/grupa-cms` (admins only): Sveltia `public/index.html` (pinned, with SRI) and `public/config.yml`, editing grupa-content. Static site at https://cms.robocza.org, preferably on Coolify (publish directory `public`, no build step); it only redeploys when the CMS itself changes.
+- Content reaches this repo through the Gitea Actions workflow `.gitea/workflows/sync-content.yml`: it copies grupa-content's `products/` into `src/content/products/` and commits to the branch it runs on. grupa-content has a webhook that calls Gitea's workflow dispatch API for this workflow on every push to `main` (the push payload's `"ref": "refs/heads/main"` selects `main` here), so every CMS save is committed to `main` and deployed. It can also be run by hand on any branch (e.g. `feature/shop` for testing).
+- Bot account `content-sync`: org team with Code Read + Actions Write on grupa-www and Code Read on grupa-content. One token (`write:repository`) in grupa-content's webhook Authorization header and as the Actions secret `CONTENT_SYNC_TOKEN` here. Pushing uses the built-in Actions token. Nothing runs in grupa-content, so editors can't run code with these credentials.
+- `src/content/products/` stays tracked here but is owned by the sync; don't edit it by hand.
+- `public/admin/` is removed here. OAuth app redirect URI becomes `https://cms.robocza.org/`; Gitea CORS `https://cms.robocza.org`.
+- The Zod schema (here) and `config.yml` (grupa-cms) must be kept in sync by hand.
 - Webhooks and order emails will live in another repository (to be discussed).
-
-Waiting on: the owner creating both repos in Gitea and sharing their paths.
