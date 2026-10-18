@@ -2,7 +2,7 @@
 name: Książka „Kjut akceleracjonizm”
 summary: Książka „Kjut akceleracjonizm” w tłumaczeniu Patryka Ciesielczyka
 active: true
-order: 2
+order: 3
 images:
   - src: ./images/kjut.jpg
     alt: Książka „Kjut akceleracjonizm”
