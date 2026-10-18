@@ -61,7 +61,7 @@ Context for adding a small shop to this Astro site. These decisions were made in
 
 ## Environment variables (Netlify)
 
-- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
+- `STRIPE_SECRET_KEY` (the webhook and its secret will live in a separate repository, see "Next: CMS and content repositories")
 - `PUBLIC_INPOST_GEOWIDGET_TOKEN` (from the InPost business account)
 - Owner notification settings (email provider / address) — TBD
 
@@ -74,7 +74,7 @@ Context for adding a small shop to this Astro site. These decisions were made in
 ## Open questions
 
 - Answered: Gitea is https://git.robocza.org (1.25.3); Astro 4.16.6; shipping is pickup 0 zł / Paczkomat 18 zł / courier 20 zł, no free-shipping threshold.
-- Order notifications: MailerSend (robocza.org is verified there), from and to `sklep@robocza.org`, plus a confirmation to the customer.
+- Order notifications: to be designed in a separate repository (2026-10-18). Decided so far: emails from and to `sklep@robocza.org` plus a confirmation to the customer; robocza.org is already verified in MailerSend.
 - Netlify production branch: `main` (answered).
 
 ## Suggested order of work
@@ -103,7 +103,7 @@ https://deploy-preview-6--fastidious-moxie-126f16.netlify.app).
 | 5. Cart | Done | `src/lib/cart.ts`, `src/pages/sklep/koszyk.astro`, `/sklep/katalog.json` |
 | 6. Delivery + Geowidget | Done | `src/pages/sklep/dostawa.astro`, prices in `src/lib/shipping.ts` |
 | 7. Checkout function | Done, tested on preview (test mode) | `src/pages/api/checkout.ts`, `src/lib/checkout.ts` |
-| 8. Success/cancel + webhook | Done | `src/pages/sklep/dziekujemy.astro`, cancel -> `/sklep/dostawa/?anulowano`; order emails: `src/pages/api/stripe-webhook.ts`, `src/lib/order-email.ts`, `src/lib/mailersend.ts` |
+| 8. Success/cancel | Done; webhook and emails moved out of this repo (to be built in another repository) | `src/pages/sklep/dziekujemy.astro`, cancel -> `/sklep/dostawa/?anulowano` |
 | 9. Gitea migration | Done (2026-10-17); merge to `main` pending | see below |
 
 Decisions made along the way:
@@ -124,15 +124,14 @@ Local dev:
 
 ### Before merging / launch
 
-- [ ] Set `branch: main` in `public/admin/config.yml` (currently `feature/shop` for testing).
+- [ ] Move the CMS out of this repo (see "Next: CMS and content repositories"); `public/admin/` goes away.
 - [ ] Merge on Gitea (not with GitHub's merge button; the mirror would overwrite it).
 - [x] Test product turned into the real `makroskop` product via the CMS.
 - [x] Inactive example product `przyklad` deleted (`book.png` is a real Makroskop photo and stays).
 - [ ] Activate BLIK and Przelewy24 in Stripe **live** mode; switch Netlify `STRIPE_SECRET_KEY` to a live **restricted key** with only "Checkout Sessions: Write" (Developers → API keys → Create restricted key), not the full secret key. If it leaks, it can only create and read checkout sessions. No code change needed.
 - [ ] In Stripe **live** mode, set the terms of service and privacy policy URLs (Settings → Business details → Public). Checkout requires terms consent and fails without them (done in the sandbox).
 - [ ] Legal items from "Before launch" above.
-- [ ] Netlify env vars per deploy context: Production = Stripe **live** `STRIPE_SECRET_KEY` and the live webhook's `STRIPE_WEBHOOK_SECRET`; Deploy previews = sandbox values. `MAILERSEND_API_TOKEN` in all contexts.
-- [ ] Stripe **live** mode: add the webhook endpoint `https://grupa.robocza.org/api/stripe-webhook` with events `checkout.session.completed` and `checkout.session.async_payment_succeeded`.
+- [ ] Netlify env vars per deploy context: Production = Stripe **live** `STRIPE_SECRET_KEY`; Deploy previews = sandbox key.
 
 ### Step 9 (Gitea)
 
@@ -154,3 +153,17 @@ Owner's tasks:
 Then (code): ~~switch `public/admin/config.yml` to `backend: gitea`~~ and ~~add `app_id`~~ (done; "Sign In with Gitea" tested), set `branch: main` at merge. Add new deploy-preview or site URLs to both the OAuth app's redirect URIs and `GITEA__cors__ALLOW_DOMAIN` if the CMS should work there. Make GitHub private too if the code should not be public.
 
 Later: reintroduce automatic blog submodule updates with Gitea Actions (needs a runner).
+
+## Next: CMS and content repositories (decided 2026-10-18)
+
+Goal: editors never get access to this repo, and editing stays easy.
+
+- `grupa-robocza/content` (editors have write access): data only, e.g. `products/*.md` and `products/images/`, later the blog and other content types. Start from the current state of `src/content/products/` (history not needed).
+- `grupa-robocza/cms` (admins only): Sveltia `index.html` (pinned, with SRI) and `config.yml`, backend pointing at the content repo. Hosted as a static site at https://cms.robocza.org, preferably on Coolify; no build step, and it only redeploys when the CMS config changes, not when content is edited.
+- This repo fetches the latest content before `astro build` (Gitea archive API with a read-only token in Netlify env) into `src/content/products/`, which becomes gitignored. Content collections, the schema and image optimisation stay as they are.
+- A Gitea webhook on the content repo calls a Netlify build hook, so every content save rebuilds the site.
+- Remove `public/admin/` here. Update the OAuth app redirect URI to `https://cms.robocza.org/` and the Gitea CORS list to `https://cms.robocza.org`.
+- The Zod schema (here) and `config.yml` (cms repo) must be kept in sync by hand; note that in both repos.
+- Webhooks and order emails will live in another repository (to be discussed).
+
+Waiting on: the owner creating both repos in Gitea and sharing their paths.
