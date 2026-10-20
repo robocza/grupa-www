@@ -68,7 +68,8 @@ export const POST: APIRoute = async ({request}) => {
             mode: 'payment',
             locale: 'pl',
             currency: 'pln',
-            payment_method_types: ['card', 'blik', 'p24'],
+            // Przelewy24 is paused until the website meets its requirements (PRZELEWY24_PLAN.md).
+            payment_method_types: ['card', 'blik'],
             line_items: order.lines.map(line => ({
                 quantity: line.quantity,
                 price_data: {

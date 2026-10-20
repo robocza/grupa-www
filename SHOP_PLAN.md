@@ -21,7 +21,7 @@ Context for adding a small shop to this Astro site. These decisions were made in
 | Cart | Client-side (localStorage), no backend |
 | Delivery choice | **InPost Geowidget v5** on our own page, before redirecting to Stripe |
 | Server code | **Netlify Functions** (via `@astrojs/netlify` on-demand routes) — only for checkout + webhook |
-| Payment | **Stripe Checkout** (hosted) with cards, **BLIK**, **Przelewy24** |
+| Payment | **Stripe Checkout** (hosted) with cards and **BLIK**; Przelewy24 paused, see `PRZELEWY24_PLAN.md` |
 | Fulfilment | Manual at first (InPost web panel); later ShipX API or a broker (Furgonetka/Apaczka) |
 
 ### Rejected options (and why)
@@ -46,7 +46,7 @@ Context for adding a small shop to this Astro site. These decisions were made in
       - locker shown to the customer via `custom_text`,
       - `phone_number_collection` enabled (InPost needs phone/email for locker parcels),
       - shipping address collection only for courier delivery,
-      - BLIK and Przelewy24 enabled (PLN currency).
+      - BLIK enabled (PLN currency); Przelewy24 paused, see `PRZELEWY24_PLAN.md`.
    4. Redirect to Stripe Checkout; success/cancel pages on our site.
 4. **Webhook** (`checkout.session.completed`) as a Netlify Function: verify signature, then notify the owner with order details incl. locker ID. Later: create InPost shipment automatically.
 5. **Stock**: manual for now (editor toggles a variant to unavailable). Optional later: counts in Netlify Blobs, decremented by the webhook, checked by the checkout function.
@@ -68,7 +68,7 @@ Context for adding a small shop to this Astro site. These decisions were made in
 ## Before launch (non-code)
 
 - Regulamin (terms), privacy policy, 14-day withdrawal information.
-- Przelewy24 requires the site to be public and show business details.
+- Przelewy24 (paused) has its own website requirements, see `PRZELEWY24_PLAN.md`.
 - Confirm fiscal receipt obligations with an accountant.
 
 ## Open questions
@@ -129,7 +129,7 @@ Local dev:
 - [ ] Merge on Gitea (not with GitHub's merge button; the mirror would overwrite it).
 - [x] Test product turned into the real `makroskop` product via the CMS.
 - [x] Inactive example product `przyklad` deleted (`book.png` is a real Makroskop photo and stays).
-- [ ] Activate BLIK and Przelewy24 in Stripe **live** mode; switch Netlify `STRIPE_SECRET_KEY` to a live **restricted key** with only "Checkout Sessions: Write" (Developers → API keys → Create restricted key), not the full secret key. If it leaks, it can only create and read checkout sessions. No code change needed.
+- [ ] Activate BLIK in Stripe **live** mode; switch Netlify `STRIPE_SECRET_KEY` to a live **restricted key** with only "Checkout Sessions: Write" (Developers → API keys → Create restricted key), not the full secret key. If it leaks, it can only create and read checkout sessions. No code change needed.
 - [ ] In Stripe **live** mode, set the terms of service and privacy policy URLs (Settings → Business details → Public). Checkout requires terms consent and fails without them (done in the sandbox).
 - [ ] Legal items from "Before launch" above.
 - [ ] Netlify env vars per deploy context: Production = Stripe **live** `STRIPE_SECRET_KEY`; Deploy previews = sandbox key.
