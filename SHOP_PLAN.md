@@ -76,6 +76,7 @@ Context for adding a small shop to this Astro site. These decisions were made in
 - Answered: Gitea is https://git.robocza.org (1.25.3); Astro 4.16.6; shipping is pickup 0 zł / Paczkomat 18 zł / courier 20 zł, no free-shipping threshold.
 - Order notifications: to be designed in a separate repository (2026-10-18). Decided so far: emails from and to `sklep@robocza.org` plus a confirmation to the customer; robocza.org is already verified in MailerSend.
 - Netlify production branch: `main` (answered).
+- Hosting: stay on Netlify with the public GitHub mirror for now; options for a private repository or self-hosting are in `HOSTING_PLAN.md` (2026-10-20).
 
 ## Suggested order of work
 
