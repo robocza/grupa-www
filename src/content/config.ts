@@ -53,7 +53,9 @@ const productsCollection = defineCollection({
         variants: z.array(z.object({
             // Shown to the customer, e.g. "M / czarny". Ignored when a product has a single variant.
             label: z.string().min(1),
-            // Unique across the whole shop; identifies the cart item at checkout.
+            // Unique across the whole shop: identifies the cart item at checkout and the order
+            // line in the admin panel. Checked within a product below and across all products
+            // (including hidden ones) in getAllProducts() in src/lib/shop.ts, which fails the build.
             sku: z.string().regex(/^[A-Za-z0-9_-]+$/, 'SKU may only contain letters, digits, "-" and "_"'),
             price: z.number().int().positive(),
             // Shown instead of the main image when this variant is selected.
