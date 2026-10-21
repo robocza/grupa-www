@@ -63,6 +63,12 @@ git-submodule-push: ## Push git submodules changes
 
 git-submodule-sync: git-submodule-pull git-submodule-push
 
+dev-cert: ## Generate a self-signed cert for HTTPS on the dev server
+	mkdir -p .docker/certs
+	openssl req -x509 -newkey rsa:2048 -nodes -days 825 -subj "/CN=gr.local" \
+		-addext "subjectAltName=DNS:gr.local,DNS:localhost,IP:127.0.0.1" \
+		-keyout .docker/certs/dev-key.pem -out .docker/certs/dev-cert.pem
+
 build-dev:
 	yarn dev
 

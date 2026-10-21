@@ -1,0 +1,118 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/Container.astro";
+import Link from "@components/Link.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+import { getStripe, SESSION_ID } from "@lib/stripe";
+import { SHIPPING, PICKUP_CONTACT, isDeliveryMethod } from "@lib/shipping";
+import { formatPrice } from "@lib/price";
+import type Stripe from "stripe";
+
+// Rendered on demand: Stripe redirects here with the Checkout Session ID after payment.
+export const prerender = false;
+
+Astro.response.headers.set('Cache-Control', 'private, no-store');
+
+const sessionId = Astro.url.searchParams.get('session_id') ?? '';
+let session: Stripe.Checkout.Session | null = null;
+
+if (SESSION_ID.test(sessionId)) {
+    try {
+        session = await getStripe()?.checkout.sessions.retrieve(sessionId, {expand: ['line_items']}) ?? null;
+    } catch (error) {
+        console.error('Could not retrieve Checkout Session', error);
+    }
+}
+
+// "complete" means the order was placed; payment can still be processing for some methods.
+const placed = session?.status === 'complete';
+const paid = session?.payment_status === 'paid';
+const deliveryMethod = session?.metadata?.delivery_method;
+const method = isDeliveryMethod(deliveryMethod) ? deliveryMethod : null;
+const lines = session?.line_items?.data ?? [];
+// Lines and shipping are shown before discounts; a promotion code's discount gets its own row.
+const discount = session?.total_details?.amount_discount ?? 0;
+const linkClass = "underline hover:text-white hover:bg-black";
+const locale = Astro.currentLocale;
+---
+<Layout title="Dziękujemy">
+    <Container>
+        <div class="mt-10">
+            <SectionHeader>
+                <Fragment slot="title">{placed ? "Dziękujemy za zamówienie!" : "Zamówienie"}</Fragment>
+            </SectionHeader>
+        </div>
+
+        {!placed && (
+            <div class="text-2xl mt-6">
+                <p>Nie znaleźliśmy tego zamówienia albo płatność nie została dokończona.</p>
+                <p class="mt-4"><Link url="/sklep/koszyk/" text="Wróć do koszyka" /></p>
+            </div>
+        )}
+
+        {placed && session && (
+            <div class="mt-6" data-order-placed>
+                <p class="text-2xl">
+                    {paid
+                        ? "Płatność została przyjęta. Przygotowujemy Twoje zamówienie i wyślemy je najszybciej jak potrafimy."
+                        : "Zamówienie zostało złożone, a płatność jest jeszcze przetwarzana. Zajmiemy się nim, gdy tylko ją otrzymamy."}
+                </p>
+
+                {method === 'pickup' && (
+                    <p class="text-xl mt-6">
+                        Termin odbioru w Aptece Designu umów mailowo: <a class={linkClass} href={`mailto:${PICKUP_CONTACT.email}`}>{PICKUP_CONTACT.email}</a>
+                        lub na Instagramie: <a class={linkClass} href={`https://www.instagram.com/${PICKUP_CONTACT.instagram}/`}>@{PICKUP_CONTACT.instagram}</a>.
+                    </p>
+                )}
+
+                <h2 class="text-xl uppercase mt-10">Podsumowanie</h2>
+                <ul class="list-none mt-2 text-xl">
+                    {lines.map(line => (
+                        <li class="flex justify-between gap-4 py-2 border-b-2 border-black">
+                            <span>{line.description} × {line.quantity}</span>
+                            <span class="shrink-0">{formatPrice(line.amount_subtotal, locale)}</span>
+                        </li>
+                    ))}
+                    {method && (
+                        <li class="flex justify-between gap-4 py-2 border-b-2 border-black">
+                            <span>
+                                {SHIPPING[method].label}
+                                {method === 'paczkomat' && session.metadata?.paczkomat_id && (
+                                    <span class="block text-lg">
+                                        {session.metadata.paczkomat_id}{session.metadata.paczkomat_address && `, ${session.metadata.paczkomat_address}`}
+                                    </span>
+                                )}
+                            </span>
+                            <span class="shrink-0">{formatPrice(session.shipping_cost?.amount_subtotal ?? 0, locale)}</span>
+                        </li>
+                    )}
+                    {discount > 0 && (
+                        <li class="flex justify-between gap-4 py-2 border-b-2 border-black">
+                            <span>Rabat</span>
+                            <span class="shrink-0">−{formatPrice(discount, locale)}</span>
+                        </li>
+                    )}
+                    <li class="flex justify-between gap-4 py-2 text-2xl uppercase">
+                        <span>Razem</span>
+                        <span class="shrink-0">{formatPrice(session.amount_total ?? 0, locale)}</span>
+                    </li>
+                </ul>
+
+                <p class="text-xl mt-10">
+                    Problem z zamówieniem? Napisz do nas: <a class={linkClass} href="mailto:grupa@robocza.org">grupa@robocza.org</a>
+                </p>
+                <p class="text-xl mt-4"><Link url="/sklep/" text="← Wróć do sklepu" /></p>
+            </div>
+        )}
+    </Container>
+</Layout>
+
+<script>
+    import {clearCart, clearDelivery} from '@lib/cart';
+
+    // Only clear the cart once Stripe confirms the order was placed.
+    if (document.querySelector('[data-order-placed]')) {
+        clearCart();
+        clearDelivery();
+    }
+</script>
