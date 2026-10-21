@@ -2,6 +2,7 @@
 name: Pocztówka „Capitalism is dead. Long live technofeudalism”
 summary: Pocztówka z ilustracją autorstwa Mai Starakiewicz
 active: true
+soldOut: true
 order: 2
 images:
   - src: ./images/pocztowka.jfif
