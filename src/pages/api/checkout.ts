@@ -70,8 +70,11 @@ export const POST: APIRoute = async ({request}) => {
             currency: 'pln',
             // Przelewy24 is paused until the website meets its requirements (PRZELEWY24_PLAN.md).
             payment_method_types: ['card', 'blik'],
+            // The admin panel maps order lines by SKU and product slug, never by name. It names
+            // products from product_name and variants from the line's description, which is
+            // product_data.name: "Name — Label", or just the name for a single-variant product.
             line_items: order.lines.map(line => {
-                const {product, variant} = catalog.get(line.sku)!;
+                const {product} = catalog.get(line.sku)!;
 
                 return {
                     quantity: line.quantity,
@@ -79,7 +82,6 @@ export const POST: APIRoute = async ({request}) => {
                         sku: line.sku,
                         product: product.slug,
                         product_name: product.data.name,
-                        variant_label: variant.label,
                     },
                     price_data: {
                         currency: 'pln',

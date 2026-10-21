@@ -54,7 +54,10 @@ const productsCollection = defineCollection({
         order: z.number().int().default(0),
         variants: z.array(z.object({
             // Shown to the customer, e.g. "M / czarny". Ignored when a product has a single variant.
-            label: z.string().min(1).max(150),
+            // Max 90, not 150: with several variants the order line is named "<name> — <label>"
+            // (itemName in src/lib/shop.ts), which must fit the admin panel's 250-character variant
+            // name (150 + 3 + 90 = 243).
+            label: z.string().min(1).max(90),
             // Unique across the whole shop: identifies the cart item at checkout and the order
             // line in the admin panel. Checked within a product below and across all products
             // (including hidden ones) in getAllProducts() in src/lib/shop.ts, which fails the build.
