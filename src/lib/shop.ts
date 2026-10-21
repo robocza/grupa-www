@@ -7,11 +7,17 @@ export type ProductVariant = Product['data']['variants'][number];
 
 // All products, including inactive ones, so a SKU can't be reused while a product is hidden.
 // Throws (failing the build) if two products share a SKU, since checkout looks items up by SKU.
+const MAX_SLUG_LENGTH = 100;
+
 export async function getAllProducts(): Promise<Product[]> {
     const products = await getCollection('products');
     const owners = new Map<string, string>();
 
     for (const product of products) {
+        // The slug is the file name, so the schema can't limit it; the CMS caps it at 100.
+        if (product.slug.length > MAX_SLUG_LENGTH) {
+            throw new Error(`Product slug "${product.slug}" is longer than ${MAX_SLUG_LENGTH} characters`);
+        }
         for (const {sku} of product.data.variants) {
             const owner = owners.get(sku);
             if (owner !== undefined) {

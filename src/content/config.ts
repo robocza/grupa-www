@@ -42,7 +42,9 @@ const teamCollection = defineCollection({
 const productsCollection = defineCollection({
     type: 'content',
     schema: ({image}) => z.object({
-        name: z.string().min(1),
+        // Length limits match the CMS config (grupa-cms, public/config.yml). Checkout sends the
+        // name, variant label, SKU and slug to Stripe as metadata, which allows 500 characters.
+        name: z.string().min(1).max(150),
         summary: z.string().optional(),
         images: z.array(z.object({
             src: image(),
@@ -52,11 +54,11 @@ const productsCollection = defineCollection({
         order: z.number().int().default(0),
         variants: z.array(z.object({
             // Shown to the customer, e.g. "M / czarny". Ignored when a product has a single variant.
-            label: z.string().min(1),
+            label: z.string().min(1).max(150),
             // Unique across the whole shop: identifies the cart item at checkout and the order
             // line in the admin panel. Checked within a product below and across all products
             // (including hidden ones) in getAllProducts() in src/lib/shop.ts, which fails the build.
-            sku: z.string().regex(/^[A-Za-z0-9_-]+$/, 'SKU may only contain letters, digits, "-" and "_"'),
+            sku: z.string().max(50).regex(/^[A-Za-z0-9_-]+$/, 'SKU may only contain letters, digits, "-" and "_"'),
             price: z.number().int().positive(),
             // Shown instead of the main image when this variant is selected.
             image: image().optional(),

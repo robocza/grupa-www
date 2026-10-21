@@ -70,18 +70,24 @@ export const POST: APIRoute = async ({request}) => {
             currency: 'pln',
             // Przelewy24 is paused until the website meets its requirements (PRZELEWY24_PLAN.md).
             payment_method_types: ['card', 'blik'],
-            // The admin panel maps orders by these codes (SKU per line, delivery method per
-            // shipping rate), never by name; line item metadata is reachable with
-            // `expand: ['data.line_items']`, unlike the product's.
-            line_items: order.lines.map(line => ({
-                quantity: line.quantity,
-                metadata: {sku: line.sku},
-                price_data: {
-                    currency: 'pln',
-                    unit_amount: line.price,
-                    product_data: {name: line.name, metadata: {sku: line.sku}},
-                },
-            })),
+            line_items: order.lines.map(line => {
+                const {product, variant} = catalog.get(line.sku)!;
+
+                return {
+                    quantity: line.quantity,
+                    metadata: {
+                        sku: line.sku,
+                        product: product.slug,
+                        product_name: product.data.name,
+                        variant_label: variant.label,
+                    },
+                    price_data: {
+                        currency: 'pln',
+                        unit_amount: line.price,
+                        product_data: {name: line.name, metadata: {sku: line.sku}},
+                    },
+                };
+            }),
             shipping_options: [{
                 shipping_rate_data: {
                     type: 'fixed_amount',
