@@ -51,6 +51,9 @@ const productsCollection = defineCollection({
             alt: z.string().default(''),
         })).min(1),
         active: z.boolean().default(true),
+        // Sold out: still listed (faded, marked "Wyprzedane") but can't be bought, whatever the
+        // variants' own `available` says. Hidden products use `active: false` instead.
+        soldOut: z.boolean().default(false),
         order: z.number().int().default(0),
         variants: z.array(z.object({
             // Shown to the customer, e.g. "M / czarny". Ignored when a product has a single variant.

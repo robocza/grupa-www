@@ -38,13 +38,18 @@ export async function getActiveProducts(): Promise<Product[]> {
         .sort((a, b) => a.data.order - b.data.order || a.data.name.localeCompare(b.data.name, 'pl'));
 }
 
+// A variant can be bought when it's available and the whole product isn't marked sold out.
+export function isVariantAvailable(product: Product, variant: ProductVariant): boolean {
+    return variant.available && !product.data.soldOut;
+}
+
 export function isAvailable(product: Product): boolean {
-    return product.data.variants.some(variant => variant.available);
+    return product.data.variants.some(variant => isVariantAvailable(product, variant));
 }
 
 // Lowest price among available variants, or among all variants if none are available.
 export function lowestPrice(product: Product): number {
-    const available = product.data.variants.filter(variant => variant.available);
+    const available = product.data.variants.filter(variant => isVariantAvailable(product, variant));
 
     return Math.min(...(available.length ? available : product.data.variants).map(variant => variant.price));
 }

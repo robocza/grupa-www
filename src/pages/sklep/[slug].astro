@@ -4,7 +4,7 @@ import Layout from "@layouts/Layout.astro";
 import Container from "@components/Container.astro";
 import Link from "@components/Link.astro";
 import CartLink from "@components/CartLink.astro";
-import { getActiveProducts, formatPrice, type Product } from "@lib/shop";
+import { getActiveProducts, formatPrice, isVariantAvailable, type Product } from "@lib/shop";
 
 export async function getStaticPaths() {
     const products = await getActiveProducts();
@@ -30,6 +30,7 @@ const gallery = await Promise.all(images.map(async image => ({
 
 const options = await Promise.all(variants.map(async variant => ({
     ...variant,
+    available: isVariantAvailable(product, variant),
     formattedPrice: formatPrice(variant.price, Astro.currentLocale),
     imageSrc: variant.image ? (await getImage({ src: variant.image, width: imageWidth, optimize: true })).src : undefined,
 })));

@@ -1,6 +1,6 @@
 import type {APIRoute} from 'astro';
 import {getStripe} from '@lib/stripe';
-import {getCatalog, itemName} from '@lib/shop';
+import {getCatalog, itemName, isVariantAvailable} from '@lib/shop';
 import {parseOrder, type Order} from '@lib/checkout';
 import {SHIPPING, PICKUP_CONTACT} from '@lib/shipping';
 
@@ -46,7 +46,7 @@ export const POST: APIRoute = async ({request}) => {
     const result = parseOrder(body, sku => {
         const entry = catalog.get(sku);
 
-        return entry && {name: itemName(entry), price: entry.variant.price, available: entry.variant.available};
+        return entry && {name: itemName(entry), price: entry.variant.price, available: isVariantAvailable(entry.product, entry.variant)};
     });
     if ('error' in result) {
         return json({error: result.error}, 400);

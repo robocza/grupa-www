@@ -1,6 +1,6 @@
 import type {APIRoute} from 'astro';
 import {getImage} from 'astro:assets';
-import {getCatalog} from '@lib/shop';
+import {getCatalog, isVariantAvailable} from '@lib/shop';
 import type {CatalogItem} from '@lib/cart';
 
 // SKU -> display data for the cart. Built with the site, so the cart always shows current
@@ -15,7 +15,7 @@ export const GET: APIRoute = async () => {
             name: product.data.name,
             label: product.data.variants.length > 1 ? variant.label : undefined,
             price: variant.price,
-            available: variant.available,
+            available: isVariantAvailable(product, variant),
             image: image.src,
             url: `/sklep/${product.slug}`,
         };
