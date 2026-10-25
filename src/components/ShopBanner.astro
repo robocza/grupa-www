@@ -1,0 +1,26 @@
+---
+const language = Astro.currentLocale;
+
+// Lines are broken by hand, so the text is only as wide as its longest line and sits at the right edge.
+let callToActionLines: string[];
+
+switch (language) {
+    case 'pl':
+        callToActionLines = ['zajrzyj do', 'naszego', 'sklepu'];
+        break;
+    case 'en':
+        callToActionLines = ['visit', 'our shop'];
+        break;
+}
+---
+<a href="/sklep/" class="flex items-center gap-6 md:gap-8 rounded-3xl bg-shop px-6 py-5 md:px-8 my-8 md:my-16 hover:bg-black group">
+    <!-- The logo is a mask, so its colour can change on hover. -->
+    <span role="img" aria-label="Kram Roboczy" class="w-36 md:w-52 aspect-[299/99] shrink-0 bg-black group-hover:bg-shop" style="mask: url('/assets/shop/logo.svg') center / contain no-repeat; -webkit-mask: url('/assets/shop/logo.svg') center / contain no-repeat;"></span>
+    <span class="hidden sm:flex grow items-center" aria-hidden="true">
+        <span class="grow border-t-2 border-black group-hover:border-shop"></span>
+        <span class="w-4 h-4 -ml-4 border-t-2 border-r-2 border-black rotate-45 group-hover:border-shop"></span>
+    </span>
+    <span class="ml-auto sm:ml-0 shrink-0 whitespace-nowrap text-xl md:text-3xl leading-tight group-hover:text-shop">
+        {callToActionLines.map((line, index) => <>{index > 0 && <br/>}{line}</>)}
+    </span>
+</a>

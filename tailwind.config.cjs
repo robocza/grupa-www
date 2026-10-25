@@ -4,6 +4,10 @@ module.exports = {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
   theme: {
     extend: {
+      colors: {
+        // Kram Roboczy (the shop): banner and "Kup" badges on the homepage.
+        shop: '#8bfc7a',
+      },
       fontFamily: {
         sans: ['GT America Regular', ...defaultTheme.fontFamily.sans],
       },

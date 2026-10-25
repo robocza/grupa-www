@@ -1,0 +1,49 @@
+---
+import Badge from "@components/Badge.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+import Link from "@components/Link.astro";
+
+export interface ProjectItem {
+    title: string;
+    description: string;
+    logo: string;
+    url: string;
+    badge: {
+        // Black text on a transparent background, shown at its own size in the circle.
+        image: string;
+        url: string;
+        label: string;
+    } | null;
+}
+
+interface Props {
+    title: string;
+    items: ProjectItem[];
+}
+
+const {title, items} = Astro.props;
+---
+<div class="my-6 md:my-12">
+    <SectionHeader>
+        <Fragment slot="title">{title}</Fragment>
+    </SectionHeader>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 sm:gap-4 xl:gap-6 mt-8 mb-4 md:mt-16 md:mb-8">
+    {
+        items.map((item) => (
+                <div class="text-center relative p-4 flex">
+                    {item.badge && <Badge image={item.badge.image} url={item.badge.url} label={item.badge.label}></Badge>}
+                    <div class="grid place-items-center grow grid-rows-2">
+                        <div class="self-center mt-4 md:mt-8 px-4">
+                            <a href={item.url}>
+                                <img src={item.logo} alt={item.title}/>
+                            </a>
+                        </div>
+                        <div class="mt-4 md:mt-8 self-start text-xl text-center">
+                            <Link url={item.url} text={item.description} />
+                        </div>
+                    </div>
+                </div>
+        ))
+    }
+</div>
