@@ -105,7 +105,7 @@ https://deploy-preview-6--fastidious-moxie-126f16.netlify.app).
 | 6. Delivery + Geowidget | Done | `src/pages/sklep/dostawa.astro`, prices in `src/lib/shipping.ts` |
 | 7. Checkout function | Done, tested on preview (test mode) | `src/pages/api/checkout.ts`, `src/lib/checkout.ts` |
 | 8. Success/cancel | Done; webhook and emails moved out of this repo (to be built in another repository) | `src/pages/sklep/dziekujemy.astro`, cancel -> `/sklep/dostawa/?anulowano` |
-| 9. Gitea migration | Done (2026-10-17); merge to `main` pending | see below |
+| 9. Gitea migration | Done (2026-10-17); merged to `main` 2026-10-25 | see below |
 
 Decisions made along the way:
 
@@ -127,14 +127,14 @@ Local dev:
 
 - [x] CMS moved to grupa-cms (cms.robocza.org), content to grupa-content, synced here by the "Sync content" workflow (see "CMS and content repositories").
 - [ ] After merging: check that a CMS save triggers the webhook and the sync commits to `main` (until then deliveries fail because the workflow isn't on `main`).
-- [ ] Merge on Gitea (not with GitHub's merge button; the mirror would overwrite it).
+- [x] Merge on Gitea (not with GitHub's merge button; the mirror would overwrite it).
 - [x] Test product turned into the real `makroskop` product via the CMS.
 - [x] Inactive example product `przyklad` deleted (`book.png` is a real Makroskop photo and stays).
-- [ ] Activate BLIK in Stripe **live** mode; switch Netlify `STRIPE_SECRET_KEY` to a live **restricted key** with only "Checkout Sessions: Write" (Developers → API keys → Create restricted key), not the full secret key. If it leaks, it can only create and read checkout sessions. No code change needed.
-- [ ] In Stripe **live** mode, set the terms of service and privacy policy URLs (Settings → Business details → Public). Checkout requires terms consent and fails without them (done in the sandbox).
+- [x] Activate BLIK in Stripe **live** mode; switch Netlify `STRIPE_SECRET_KEY` to a live **restricted key** with only "Checkout Sessions: Write" (Developers → API keys → Create restricted key), not the full secret key. If it leaks, it can only create and read checkout sessions. No code change needed.
+- [x] In Stripe **live** mode, set the terms of service and privacy policy URLs (Settings → Business details → Public). Checkout requires terms consent and fails without them (done in the sandbox).
 - [ ] Legal items from "Before launch" above.
-- [ ] In Stripe **live** mode, turn on receipts (Settings → Customer emails → Successful payments) and check what they contain.
-- [ ] Netlify env vars per deploy context: Production = Stripe **live** `STRIPE_SECRET_KEY`; Deploy previews = sandbox key.
+- [x] In Stripe **live** mode, turn on receipts (Settings → Customer emails → Successful payments) and check what they contain.
+- [x] Netlify env vars per deploy context: Production = Stripe **live** `STRIPE_SECRET_KEY`; Deploy previews = sandbox key.
 
 ### Step 9 (Gitea)
 
@@ -153,7 +153,7 @@ Owner's tasks:
 5. Editors: Gitea accounts with write access; branch protection with unprotected file pattern `src/content/products/**` (verify it applies to API commits).
 6. Point local clones at Gitea; stop pushing to GitHub directly. (Done for the owner's checkout: `origin` = Gitea, `github` remote is fetch-only.)
 
-Then (code): ~~switch `public/admin/config.yml` to `backend: gitea`~~ and ~~add `app_id`~~ (done; "Sign In with Gitea" tested), set `branch: main` at merge. Add new deploy-preview or site URLs to both the OAuth app's redirect URIs and `GITEA__cors__ALLOW_DOMAIN` if the CMS should work there. Make GitHub private too if the code should not be public.
+Then (code): ~~switch `public/admin/config.yml` to `backend: gitea`~~ and ~~add `app_id`~~ (done; "Sign In with Gitea" tested). The CMS now lives in grupa-cms and edits `main` of grupa-content. Add new deploy-preview or site URLs to both the OAuth app's redirect URIs and `GITEA__cors__ALLOW_DOMAIN` if the CMS should work there. Make GitHub private too if the code should not be public.
 
 Later: reintroduce automatic blog submodule updates with Gitea Actions (needs a runner).
 
