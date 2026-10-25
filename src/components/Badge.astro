@@ -1,5 +1,15 @@
 ---
-const {bg, text} = Astro.props;
-const className = "rounded-full w-28 h-28 inline-block absolute z-10 right-0 top-0 bg-no-repeat bg-center " + bg;
+interface Props {
+    image: string;
+    url: string;
+    label: string;
+}
+
+const {image, url, label} = Astro.props;
+// The image is a mask, so the text can change colour with the circle on hover. It is scaled with
+// the circle: the text is 25px high in a 112px circle.
+const mask = `url('${image}') center / auto 22% no-repeat`;
 ---
-<div class={className}></div>
+<a class="rounded-full w-20 h-20 sm:w-28 sm:h-28 absolute z-10 right-0 top-0 bg-shop hover:bg-black group" href={url} aria-label={label}>
+    <span class="absolute inset-0 bg-black group-hover:bg-shop" style={`mask: ${mask}; -webkit-mask: ${mask};`}></span>
+</a>

@@ -1,0 +1,83 @@
+---
+import ProjectGrid from "@components/ProjectGrid.astro";
+import type {ProjectItem} from "@components/ProjectGrid.astro";
+
+const language = Astro.currentLocale;
+
+// The shop is in Polish only, so both languages link to the same product pages.
+const makroskopUrl = "/sklep/makroskop/";
+const kjutUrl = "/sklep/ksiazka-kjut-akceleracjonizm/";
+
+let sectionTitle;
+let publications: ProjectItem[];
+
+switch (language) {
+    case 'pl':
+        sectionTitle = 'Wydawnictwo';
+        publications = [
+            {
+                title: "Makroskop",
+                description: "Książka Makroskop. Jak patrzeć na technologie?",
+                logo: "/assets/projects/makroskop.svg",
+                url: makroskopUrl,
+                badge: {image: "/assets/badge/kup.svg", url: makroskopUrl, label: "Kup"}
+            },
+            {
+                title: "Kjut akceleracjonizm",
+                description: "Polskie tłumaczenie książki Cute Accelerationism",
+                logo: "/assets/projects/kjut-akceleracjonizm.svg",
+                url: kjutUrl,
+                badge: {image: "/assets/badge/kup.svg", url: kjutUrl, label: "Kup"}
+            },
+            {
+                title: "Wymieranie internetu",
+                description: "Polskie tłumaczenie Extinction Internet Geerta Lovinka",
+                logo: "/assets/projects/wymieranie-internetu.png",
+                url: "https://wymieranie.mvu.pl/",
+                badge: null
+            },
+            {
+                title: "Nooskop",
+                description: "Polskie tłumaczenie NOOSCOPE",
+                logo: "/assets/projects/nooskop.png",
+                url: "https://nooskop.mvu.pl/",
+                badge: null
+            },
+        ];
+        break;
+    case 'en':
+        sectionTitle = 'Publishing';
+        publications = [
+            {
+                title: "Makroskop",
+                description: "The book Makroskop. How to look at technologies?",
+                logo: "/assets/projects/makroskop.svg",
+                url: makroskopUrl,
+                badge: {image: "/assets/badge/buy.svg", url: makroskopUrl, label: "Buy"}
+            },
+            {
+                title: "Kjut akceleracjonizm",
+                description: "Polish translation of the book Cute Accelerationism",
+                logo: "/assets/projects/kjut-akceleracjonizm.svg",
+                url: kjutUrl,
+                badge: {image: "/assets/badge/buy.svg", url: kjutUrl, label: "Buy"}
+            },
+            {
+                title: "Wymieranie internetu",
+                description: "Polish translation of Geert Lovink's Extinction Internet",
+                logo: "/assets/projects/wymieranie-internetu.png",
+                url: "https://wymieranie.mvu.pl/",
+                badge: null
+            },
+            {
+                title: "Nooskop",
+                description: "Polish translation of NOOSCOPE",
+                logo: "/assets/projects/nooskop.png",
+                url: "https://nooskop.mvu.pl/",
+                badge: null
+            },
+        ];
+        break;
+}
+---
+<ProjectGrid title={sectionTitle} items={publications} />

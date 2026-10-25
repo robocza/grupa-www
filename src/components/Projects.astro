@@ -1,29 +1,21 @@
 ---
-import Badge from "@components/Badge.astro";
-import SectionHeader from "@components/SectionHeader.astro";
-import Link from "@components/Link.astro";
+import ProjectGrid from "@components/ProjectGrid.astro";
+import type {ProjectItem} from "@components/ProjectGrid.astro";
 
 const language = Astro.currentLocale;
 
 let sectionTitle;
-let projects;
+let projects: ProjectItem[];
 
 switch (language) {
     case 'pl':
         sectionTitle = 'Nasze projekty';
         projects = [
             {
-                title: "Minimum Viable Utopia",
-                description: "Społeczność skupiona wokół wyzwań współczesności",
-                logo: "/assets/projects/mvu.svg",
-                url: "https://mvu.pl",
-                badge: null
-            },
-            {
-                title: "Eden Learning Garden",
-                description: "Cykl meetupów poruszająch różne aspekty nowoczesnych technologii",
-                logo: "/assets/projects/eden.svg",
-                url: "https://eden.mvu.pl",
+                title: "The Makers",
+                description: "Realizacja grantu w ramach programu Horyzont Europa",
+                logo: "/assets/projects/the-makers.png",
+                url: "https://themakers.us.edu.pl/",
                 badge: null
             },
             {
@@ -31,13 +23,32 @@ switch (language) {
                 description: "Ubrania robocze nowej generacji",
                 logo: "/assets/projects/or.svg",
                 url: "https://odziez.robocza.org",
-                badge: {
-                    bg: "bg-[url('/assets/badge/or.svg')] bg-[#ff6651]",
-                }
+                badge: null
+            },
+            {
+                title: "Eden Learning Garden",
+                description: "Seria wydarzeń i interdyscyplinarnych seminariów",
+                logo: "/assets/projects/eden.svg",
+                url: "https://eden.mvu.pl",
+                badge: null
+            },
+            {
+                title: "Minimum Viable Utopia",
+                description: "Społeczność skupiona wokół wyzwań współczesności i eksperymentów",
+                logo: "/assets/projects/mvu.svg",
+                url: "https://mvu.pl",
+                badge: null
+            },
+            {
+                title: "Wyprawa Robocza",
+                description: "Wycieczki dla projektujących i\u00A0nie\u00A0tylko",
+                logo: "/assets/projects/wyprawa-robocza.svg",
+                url: "https://wyprawa.robocza.org",
+                badge: null
             },
             {
                 title: "Agrocybernetyka",
-                description: "Inicjatywa agrofuturystyczna",
+                description: "Ogrodnictwo 2.0 i Parcelowy Ogród Społeczny Pod Gwiazdami",
                 logo: "/assets/projects/agrocybernetyka.svg",
                 url: "https://agrocybernetyka.pl/",
                 badge: null
@@ -48,17 +59,10 @@ switch (language) {
         sectionTitle = 'Our projects';
         projects = [
             {
-                title: "Minimum Viable Utopia",
-                description: "A community focused on contemporary challenges",
-                logo: "/assets/projects/mvu.svg",
-                url: "https://mvu.pl",
-                badge: null
-            },
-            {
-                title: "Eden Learning Garden",
-                description: "Cycle of meetups covering various aspects of modern technologies",
-                logo: "/assets/projects/eden.svg",
-                url: "https://eden.mvu.pl",
+                title: "The Makers",
+                description: "A grant project under the Horizon Europe programme",
+                logo: "/assets/projects/the-makers.png",
+                url: "https://themakers.us.edu.pl/",
                 badge: null
             },
             {
@@ -66,13 +70,32 @@ switch (language) {
                 description: "Next-generation workwear",
                 logo: "/assets/projects/or.svg",
                 url: "https://odziez.robocza.org",
-                badge: {
-                    bg: "bg-[url('/assets/badge/or.svg')] bg-[#ff6651]",
-                }
+                badge: null
+            },
+            {
+                title: "Eden Learning Garden",
+                description: "A series of events and interdisciplinary seminars",
+                logo: "/assets/projects/eden.svg",
+                url: "https://eden.mvu.pl",
+                badge: null
+            },
+            {
+                title: "Minimum Viable Utopia",
+                description: "A community focused on contemporary challenges and experiments",
+                logo: "/assets/projects/mvu.svg",
+                url: "https://mvu.pl",
+                badge: null
+            },
+            {
+                title: "Wyprawa Robocza",
+                description: "Trips for designers and everyone else",
+                logo: "/assets/projects/wyprawa-robocza.svg",
+                url: "https://wyprawa.robocza.org",
+                badge: null
             },
             {
                 title: "Agrocybernetyka",
-                description: "Agrofuturistic initiative",
+                description: "Gardening 2.0 and the Pod Gwiazdami Community Allotment Garden",
                 logo: "/assets/projects/agrocybernetyka.svg",
                 url: "https://agrocybernetyka.pl/",
                 badge: null
@@ -81,27 +104,4 @@ switch (language) {
         break;
 }
 ---
-<div class="my-6 md:my-12">
-    <SectionHeader>
-        <Fragment slot="title">{sectionTitle}</Fragment>
-    </SectionHeader>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 sm:gap-4 xl:gap-6 mt-8 mb-4 md:mt-16 md:mb-8">
-    {
-        projects.map((item) => (
-                <div class="text-center relative p-4 flex">
-                    {item.badge && <Badge bg={item.badge.bg}></Badge>}
-                    <div class="grid place-items-center grow grid-rows-2">
-                        <div class="self-center mt-4 md:mt-8 px-4">
-                            <a href={item.url}>
-                                <img src={item.logo} alt={item.title}/>
-                            </a>
-                        </div>
-                        <div class="mt-4 md:mt-8 self-start text-xl text-center">
-                            <Link url={item.url} text={item.description} />
-                        </div>
-                    </div>
-                </div>
-        ))
-    }
-</div>
+<ProjectGrid title={sectionTitle} items={projects} />

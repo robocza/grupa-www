@@ -1,0 +1,54 @@
+# Copies the content edited through the CMS (grupa-robocza/grupa-content) into this repository
+# and commits it to the branch the workflow runs on. A push to that branch then deploys as
+# usual (push mirror to GitHub, Netlify).
+#
+# Started by the webhook of grupa-content on every push to its main branch: Gitea's push
+# payload contains "ref": "refs/heads/main", which the dispatch API uses as the branch to run
+# on here. It can also be run by hand from the Actions tab, on any branch.
+#
+# Needs the secret CONTENT_SYNC_TOKEN: token of the content-sync bot, which can read
+# grupa-content (and start this workflow). Pushing uses the built-in Actions token.
+
+name: Sync content
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      CONTENT_REPOSITORY: grupa-robocza/grupa-content
+      CONTENT_SYNC_TOKEN: ${{ secrets.CONTENT_SYNC_TOKEN }}
+      GITEA_TOKEN: ${{ gitea.token }}
+      SERVER_URL: ${{ gitea.server_url }}
+      REPOSITORY: ${{ gitea.repository }}
+      BRANCH: ${{ gitea.ref_name }}
+    steps:
+      - name: Copy content and commit
+        run: |
+          set -eu
+          host="${SERVER_URL#https://}"
+
+          git clone --quiet --depth 1 "https://content-sync:${CONTENT_SYNC_TOKEN}@${host}/${CONTENT_REPOSITORY}.git" content
+          git clone --quiet --depth 1 --branch "$BRANCH" "https://actions:${GITEA_TOKEN}@${host}/${REPOSITORY}.git" site
+
+          # Folders in grupa-content, copied to src/content/<same name>.
+          for collection in products; do
+            rm -rf "site/src/content/${collection}"
+            cp -r "content/${collection}" "site/src/content/${collection}"
+            git -C site add --all "src/content/${collection}"
+          done
+
+          if git -C site diff --cached --quiet; then
+            echo "Content is already up to date."
+            exit 0
+          fi
+
+          git -C site -c user.name="content-sync" -c user.email="content-sync@robocza.org" commit --quiet \
+            -m "Update content: $(git -C content log -1 --format=%s)" \
+            -m "From ${CONTENT_REPOSITORY}@$(git -C content rev-parse --short HEAD)."
+          # Two quick saves can start two runs; if the other one pushed first, rebase and retry.
+          git -C site push --quiet origin "HEAD:${BRANCH}" \
+            || { git -C site pull --quiet --rebase origin "$BRANCH" && git -C site push --quiet origin "HEAD:${BRANCH}"; }
+          git -C site log -1 --format='Pushed %h: %s'

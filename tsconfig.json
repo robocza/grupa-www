@@ -13,6 +13,9 @@
       "@assets/*": [
         "assets/*"
       ],
+      "@lib/*": [
+        "lib/*"
+      ],
       "@pages/*": [
         "pages/*"
       ],
