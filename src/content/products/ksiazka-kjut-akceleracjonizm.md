@@ -2,6 +2,7 @@
 name: Książka „Kjut akceleracjonizm”
 summary: Książka „Kjut akceleracjonizm” w tłumaczeniu Patryka Ciesielczyka
 active: true
+soldOut: false
 order: 3
 images:
   - src: ./images/kjut.jpg
@@ -13,7 +14,7 @@ variants:
     available: true
 ---
 
-Instant klasyk Amy Ireland i Mayi B. Chronic w znakomitym tłumaczeniu Patryka Ciesielczyka. Kjut akceleracjonizm to książka na pograniczu eseju filozoficznego, poezji, prozy i techno-społecznego manifestu. W pomysłowym i przewrotnym języku, swobodnie żonglując rejestrami – od embriologii i etologii, przez queerową teorię tożsamości, aż po analizę zjawisk kultury popularnej - autorki pokazują, że estetyka kjut może być strategią oporu i swobody.
+Instant klasyk Amy Ireland i Mayi B. Kronic w znakomitym tłumaczeniu Patryka Ciesielczyka. Kjut akceleracjonizm to książka na pograniczu eseju filozoficznego, poezji, prozy i techno-społecznego manifestu. W pomysłowym i przewrotnym języku, swobodnie żonglując rejestrami – od embriologii i etologii, przez queerową teorię tożsamości, aż po analizę zjawisk kultury popularnej - autorki pokazują, że estetyka kjut może być strategią oporu i swobody.
 
 Tytuł: „Kjut akceleracjonizm”,
 Objętość: 256 stron, 
