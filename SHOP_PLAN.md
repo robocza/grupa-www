@@ -67,14 +67,14 @@ Context for adding a small shop to this Astro site. These decisions were made in
 
 ## Before launch (non-code)
 
-- Regulamin (terms), privacy policy, 14-day withdrawal information.
+- Regulamin (terms) with returns, complaints and the 14-day right of withdrawal (with the model form), and a privacy policy. Customers accept both with Stripe's required checkbox in checkout, so the website needs no consent line of its own; the pages only have to exist at the URLs set in Stripe.
 - Przelewy24 (paused) has its own website requirements, see `PRZELEWY24_PLAN.md`.
 - Confirm fiscal receipt obligations with an accountant.
 
 ## Open questions
 
 - Answered: Gitea is https://git.robocza.org (1.25.3); Astro 4.16.6; shipping is pickup 0 zł / Paczkomat 18 zł / courier 20 zł, no free-shipping threshold.
-- Order notifications: to be designed in a separate repository (2026-10-18). Decided so far: emails from and to `sklep@robocza.org` plus a confirmation to the customer; robocza.org is already verified in MailerSend.
+- Order notifications: to be designed in a separate repository (2026-10-18). Decided so far: emails from and to `sklep@robocza.org`; no email to the customer for now, Stripe's receipt is the confirmation (2026-10-25, the owner makes sure it has everything needed); our own customer email will be added later; robocza.org is already verified in MailerSend.
 - Netlify production branch: `main` (answered).
 - Hosting: stay on Netlify with the public GitHub mirror for now; options for a private repository or self-hosting are in `HOSTING_PLAN.md` (2026-10-20).
 
@@ -133,6 +133,7 @@ Local dev:
 - [ ] Activate BLIK in Stripe **live** mode; switch Netlify `STRIPE_SECRET_KEY` to a live **restricted key** with only "Checkout Sessions: Write" (Developers → API keys → Create restricted key), not the full secret key. If it leaks, it can only create and read checkout sessions. No code change needed.
 - [ ] In Stripe **live** mode, set the terms of service and privacy policy URLs (Settings → Business details → Public). Checkout requires terms consent and fails without them (done in the sandbox).
 - [ ] Legal items from "Before launch" above.
+- [ ] In Stripe **live** mode, turn on receipts (Settings → Customer emails → Successful payments) and check what they contain.
 - [ ] Netlify env vars per deploy context: Production = Stripe **live** `STRIPE_SECRET_KEY`; Deploy previews = sandbox key.
 
 ### Step 9 (Gitea)

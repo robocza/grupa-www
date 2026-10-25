@@ -42,8 +42,6 @@ extra information at account creation. The full lists are in the Stripe docs lin
   - on the shop pages only.
 - *Zwroty i reklamacje*: either its own short page or a link to the right section of the terms,
   depending on whether the terms already cover returns and refunds.
-- On the delivery page, before "Przejdź do płatności": a line that ordering means accepting the
-  terms, with links.
 
 ## Polish consumer law (not Stripe; check with a lawyer)
 
@@ -52,9 +50,10 @@ Not specific to P24, but relevant for the shop as a whole:
 - The terms must be available on the site before ordering.
 - Customers must be told how complaints work and about the 14-day right of withdrawal, with a
   model withdrawal form.
-- After purchase, they must get a confirmation of the contract on a durable medium (e.g. an
-  email). This ties in with the order emails planned in a separate repository; Stripe's receipt
-  alone may not be enough.
+- After purchase, they must get a confirmation of the contract on a durable medium. Decided
+  (2026-10-25): Stripe's receipt is that confirmation for now (our own customer email comes later), with the
+  details in the terms; customers
+  accept the terms with Stripe's checkbox in checkout.
 
 ## Turning P24 back on
 

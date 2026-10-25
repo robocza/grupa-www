@@ -50,19 +50,19 @@ creates a **Stripe Checkout Session**. Prices never come from the browser.
 
 ## Decisions already made about emails
 
-- **Two emails per paid order:**
-  - a **notification to the shop**: items, delivery (locker or address, or a pickup note),
-    discount, total, customer details incl. business name and NIP, and a link to the payment in
-    Stripe. Replying goes to the customer;
-  - a **confirmation to the customer**: same order summary and a thank-you. Replying goes to the
-    shop.
+- **One email per paid order, a notification to the shop:** items, delivery (locker or address,
+  or a pickup note), discount, total, customer details incl. business name and NIP, and a link to
+  the payment in Stripe. Replying goes to the customer.
+- **No email to the customer for now** (decided 2026-10-25; our own customer email will be
+  added later, so keep that in mind when building the shop email): Stripe's receipt is the
+  customer's confirmation, and the terms cover returns, complaints and withdrawal. The owner makes sure the
+  receipt has everything it needs (Stripe live mode: Settings → Customer emails → Successful
+  payments).
 - **Sender:** `sklep@robocza.org`. **Shop notifications to:** `sklep@robocza.org`.
 - **Provider:** MailerSend. `robocza.org` is already verified there: the SPF record includes
   `_spf.mailersend.net`, and DKIM `mlsend2._domainkey` is published. The domain's mailboxes are
   on Google Workspace.
 - Emails are in Polish. Prefix sandbox (test mode) notifications with `[TEST]`.
-- Consumer law (not legal advice): the customer should get a confirmation of the contract on a
-  durable medium. The customer email may need to cover that, so check its content with a lawyer.
 
 ## Webhook details
 
