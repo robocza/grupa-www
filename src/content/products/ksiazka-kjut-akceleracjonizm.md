@@ -1,12 +1,15 @@
 ---
 name: Książka „Kjut akceleracjonizm”
-summary: Książka „Kjut akceleracjonizm” w tłumaczeniu Patryka Ciesielczyka
+summary: Książka „Kjut akceleracjonizm” w tłumaczeniu Patryka Ciesielczyka + arkusz naklejek do personalizacji
 active: true
 soldOut: false
 order: 3
 images:
   - src: ./images/kjut.jpg
     alt: Książka „Kjut akceleracjonizm”
+  - src: ./images/kjut sticker-01.jpg
+  - src: ./images/kjut foto kwadrat.jpg
+  - src: ./images/kjut foto kwadrat sticker.jpg
 variants:
   - label: Książka „Kjut akceleracjonizm” w tłumaczeniu Patryka Ciesielczyka (cena przedpremierowa)
     sku: KJUT-AKCELERACJONIZM-PRZEDPREMIERA
@@ -15,6 +18,8 @@ variants:
 ---
 
 Instant klasyk Amy Ireland i Mayi B. Kronic w znakomitym tłumaczeniu Patryka Ciesielczyka. Kjut akceleracjonizm to książka na pograniczu eseju filozoficznego, poezji, prozy i techno-społecznego manifestu. W pomysłowym i przewrotnym języku, swobodnie żonglując rejestrami – od embriologii i etologii, przez queerową teorię tożsamości, aż po analizę zjawisk kultury popularnej - autorki pokazują, że estetyka kjut może być strategią oporu i swobody.
+
+Do książki dołączamy arkusz naklejek. Możesz nimi spersonalizować okładkę albo okleić laptopa, zeszyt czy cokolwiek zechcesz.
 
 Tytuł: „Kjut akceleracjonizm”,
 Objętość: 256 stron, 
