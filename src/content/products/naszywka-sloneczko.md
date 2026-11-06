@@ -3,7 +3,7 @@ name: Naszywka „Słoneczko”
 summary: Naszywka do samodzielnego naszycia
 active: true
 soldOut: false
-order: 0
+order: 5
 images:
   - src: ./images/naszywka-sloneczko.png
   - src: ./images/naszywka.jpg
