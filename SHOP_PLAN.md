@@ -119,7 +119,7 @@ Decisions made along the way:
 Local dev:
 
 - Node runs in the docker container: `docker compose exec --user 1000:1000 -w /app node npx astro dev --host 0.0.0.0 --port 4321`.
-- HTTPS via self-signed cert (`make dev-cert`, gitignored in `.docker/certs/`).
+- HTTPS via self-signed cert (`just dev-cert`, gitignored in `.docker/certs/`).
 - Site at https://gr.local (port 443 via gitignored `docker-compose.override.yml`). The InPost token is bound to domains without a port, so `gr.local:4321` gets "Brak dostępu".
 - Env vars in `.env`: `PUBLIC_INPOST_GEOWIDGET_TOKEN`, `STRIPE_SECRET_KEY` (test mode). Same on Netlify.
 
@@ -141,7 +141,7 @@ Local dev:
 Repo: `grupa-robocza/grupa-www` on Gitea (private), SSH `git@git.robocza.org:grupa-robocza/grupa-www.git`.
 GitHub `robocza/grupa-www` (public) is only updated by the push mirror. Don't push to it, and don't use the CMS until it is switched to Gitea: commits made on GitHub are overwritten by the next mirror sync.
 
-The GitHub Action that updated the blog submodule (`.github/workflows/update_submodule.yml`) is removed: it committed on GitHub, which the push mirror would overwrite. Until it's reintroduced with Gitea Actions (planned), update the blog manually with `make git-submodule-sync`. `dispatch_update.yml` in the blog repo now dispatches to nothing; disable it there too.
+The GitHub Action that updated the blog submodule (`.github/workflows/update_submodule.yml`) is removed: it committed on GitHub, which the push mirror would overwrite. Until it's reintroduced with Gitea Actions (planned), update the blog manually with `just git-submodule-sync`. `dispatch_update.yml` in the blog repo now dispatches to nothing; disable it there too.
 
 Owner's tasks:
 
