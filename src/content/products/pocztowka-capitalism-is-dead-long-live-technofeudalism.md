@@ -5,7 +5,7 @@ active: true
 soldOut: false
 order: 2
 images:
-  - src: ./images/pocztowka.jfif
+  - src: ./images/pocztowka.jpg
 variants:
   - label: Pocztówka „Capitalism is dead. Long live technofeudalism”
     sku: MAKROSKOP-POCZTOWKA
