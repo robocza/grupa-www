@@ -1,0 +1,26 @@
+/* Tailwind CSS. Imported once, in src/layouts/Layout.astro. Classes are found automatically in
+   the source files (git-ignored files such as dist/ are skipped). */
+@import "tailwindcss";
+
+@plugin "@tailwindcss/typography";
+
+@theme {
+    /* Kram Roboczy (the shop): banner and "Kup" badges on the homepage, link preview images
+       (src/lib/link-preview.ts). */
+    --color-shop: #8bfc7a;
+
+    --font-sans: "GT America Regular", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+    --text-3xl: 2rem;
+    --text-3xl--line-height: 2.75rem;
+    --text-4xl: 2.5rem;
+    --text-4xl--line-height: 3.2rem;
+}
+
+@layer base {
+    /* Tailwind 4 no longer gives buttons a pointer cursor; the site's buttons rely on it. */
+    button:not(:disabled),
+    [role="button"]:not(:disabled) {
+        cursor: pointer;
+    }
+}

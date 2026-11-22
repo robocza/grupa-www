@@ -1,5 +1,5 @@
 import { defineConfig } from "astro/config";
-import tailwind from "@astrojs/tailwind";
+import tailwindcss from "@tailwindcss/vite";
 import netlify from "@astrojs/netlify";
 import fs from "node:fs";
 import { defaultLocale, locales } from "./src/i18n.mjs";
@@ -30,15 +30,13 @@ export default defineConfig({
     image: {
         service: {entrypoint: "./src/lib/image-service.ts"}
     },
-    integrations: [
-        tailwind(),
-    ],
     redirects: {
         // Printed/shared link for the book. Temporary (302), so browsers don't cache it and it can
         // be changed if the product's slug ever changes in the CMS.
         "/kup-kjut-akceleracjonizm": {status: 302, destination: "/sklep/ksiazka-kjut-akceleracjonizm"}
     },
     vite: {
+        plugins: [tailwindcss()],
         server: {
             https: devHttps,
             watch: {

@@ -16,7 +16,7 @@ const FONT_PATH = path.resolve('src/assets/fonts/GT-America-Standard-Regular.ttf
 const SITE_LOGO_PATH = path.resolve('public/assets/logo.svg');
 const SHOP_LOGO_PATH = path.resolve('public/assets/shop/logo.svg');
 
-// Keep in sync with tailwind.config.cjs.
+// Keep in sync with src/styles/global.css.
 const SHOP_COLOUR = '#8bfc7a';
 const WHITE = '#ffffff';
 const BLACK = '#000000';
