@@ -34,7 +34,9 @@ export default defineConfig({
         tailwind(),
     ],
     redirects: {
-        "/kup-kjut-akceleracjonizm": "https://buy.stripe.com/cNicN59QM3kudwf0fp4wM0b"
+        // Printed/shared link for the book. Temporary (302), so browsers don't cache it and it can
+        // be changed if the product's slug ever changes in the CMS.
+        "/kup-kjut-akceleracjonizm": {status: 302, destination: "/sklep/ksiazka-kjut-akceleracjonizm"}
     },
     vite: {
         server: {
