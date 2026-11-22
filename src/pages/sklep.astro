@@ -9,7 +9,7 @@ import { getActiveProducts, isAvailable, lowestPrice, hasPriceRange, formatPrice
 const products = await getActiveProducts();
 const locale = Astro.currentLocale;
 ---
-<Layout title="Sklep">
+<Layout title="Sklep" image="/og/sklep.jpg" imageAlt="Kram Roboczy">
     <Container>
         <div class="mt-10 flex justify-end">
             <CartLink />

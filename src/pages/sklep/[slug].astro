@@ -43,7 +43,7 @@ const initialImage = selected.image
     ? { src: selected.image, alt: options.length > 1 ? `${name} — ${selected.label}` : name }
     : images[0];
 ---
-<Layout title={name}>
+<Layout title={name} description={product.data.summary} image={`/og/sklep/${product.slug}.jpg`} imageAlt={images[0].alt || name}>
     <Container>
         <div class="mt-10 flex justify-between text-xl">
             <Link url="/sklep" text="← Sklep" />

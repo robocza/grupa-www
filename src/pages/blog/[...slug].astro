@@ -19,7 +19,13 @@ const { entry } = Astro.props;
 const { Content } = await entry.render();
 ---
 
-<Layout title="Blog">
+<Layout
+    title={entry.data.title}
+    description={entry.data.description}
+    image={entry.data.cover ? `/og/blog/${entry.slug}.png` : undefined}
+    imageAlt={entry.data.cover ? entry.data.coverAlt || entry.data.title : undefined}
+    publishedTime={entry.data.createdAt}
+>
     <Container>
         <Lead>
             <Fragment slot="text">
