@@ -132,9 +132,9 @@ export function shopPreview(): Promise<Buffer> {
 }
 
 export function jpegResponse(data: Buffer): Response {
-    return new Response(data, {headers: {'Content-Type': 'image/jpeg'}});
+    return new Response(new Uint8Array(data), {headers: {'Content-Type': 'image/jpeg'}});
 }
 
 export function pngResponse(data: Buffer): Response {
-    return new Response(data, {headers: {'Content-Type': 'image/png'}});
+    return new Response(new Uint8Array(data), {headers: {'Content-Type': 'image/png'}});
 }

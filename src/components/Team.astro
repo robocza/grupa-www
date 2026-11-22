@@ -1,25 +1,33 @@
 ---
-// import {getCollection} from 'astro:content';
+import type {MarkdownInstance} from "astro";
 import MailLink from "./MailLink.astro"
 import SectionHeader from "./SectionHeader.astro";
 
 const language = Astro.currentLocale;
 
+// Front matter of src/content/team/*.md and src/content/en/team/*.md, in file name order.
+interface TeamMember {
+    name: string;
+    title: string;
+    email: string;
+    picture: string;
+    www?: string;
+}
+
 let sectionTitle;
-let teamMembers;
+let teamMembers: MarkdownInstance<TeamMember>[] = [];
 
 switch (language) {
     case 'pl':
         sectionTitle = 'Zespół';
-        teamMembers = await Astro.glob('./../content/team/*.md');
+        teamMembers = Object.values(import.meta.glob<MarkdownInstance<TeamMember>>('../content/team/*.md', {eager: true}));
         break;
     case 'en':
         sectionTitle = 'Team';
-        teamMembers = await Astro.glob('./../content/en/team/*.md');
+        teamMembers = Object.values(import.meta.glob<MarkdownInstance<TeamMember>>('../content/en/team/*.md', {eager: true}));
         break;
 }
 
-// const teamMembers = await getCollection('team');
 ---
 <div class="my-16">
     <SectionHeader>

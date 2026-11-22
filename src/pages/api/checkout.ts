@@ -81,7 +81,7 @@ export const POST: APIRoute = async ({request}) => {
                     quantity: line.quantity,
                     metadata: {
                         sku: line.sku,
-                        product: product.slug,
+                        product: product.id,
                         product_name: product.data.name,
                     },
                     price_data: {

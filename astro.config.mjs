@@ -14,11 +14,14 @@ const devHttps = fs.existsSync(devCert.key) && fs.existsSync(devCert.cert)
 // https://astro.build/config
 export default defineConfig({
     site: "https://grupa.robocza.org",
-    // Pages stay static; only routes with `prerender = false` (shop API) run as Netlify Functions.
-    output: "hybrid",
+    // Pages are static (the default output); only routes with `prerender = false` (checkout API,
+    // order confirmation) run on demand as a Netlify Function.
     adapter: netlify({
         // Netlify Image CDN would replace our image service and re-encode the blog images.
         imageCDN: false,
+        // Don't emulate the Image CDN in `astro dev` either: it isn't used in production, and its
+        // emulation fetches the originals over plain HTTP, which fails on our HTTPS dev server.
+        devFeatures: {images: false},
     }),
     i18n: {
         defaultLocale,

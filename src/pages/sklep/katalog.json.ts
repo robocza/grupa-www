@@ -17,7 +17,7 @@ export const GET: APIRoute = async () => {
             price: variant.price,
             available: isVariantAvailable(product, variant),
             image: image.src,
-            url: `/sklep/${product.slug}`,
+            url: `/sklep/${product.id}`,
         };
     }
 

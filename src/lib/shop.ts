@@ -15,15 +15,15 @@ export async function getAllProducts(): Promise<Product[]> {
 
     for (const product of products) {
         // The slug is the file name, so the schema can't limit it; the CMS caps it at 100.
-        if (product.slug.length > MAX_SLUG_LENGTH) {
-            throw new Error(`Product slug "${product.slug}" is longer than ${MAX_SLUG_LENGTH} characters`);
+        if (product.id.length > MAX_SLUG_LENGTH) {
+            throw new Error(`Product slug "${product.id}" is longer than ${MAX_SLUG_LENGTH} characters`);
         }
         for (const {sku} of product.data.variants) {
             const owner = owners.get(sku);
             if (owner !== undefined) {
-                throw new Error(`SKU "${sku}" is used by both "${owner}" and "${product.slug}"`);
+                throw new Error(`SKU "${sku}" is used by both "${owner}" and "${product.id}"`);
             }
-            owners.set(sku, product.slug);
+            owners.set(sku, product.id);
         }
     }
 

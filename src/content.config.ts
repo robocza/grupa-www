@@ -1,8 +1,13 @@
-// 1. Import utilities from `astro:content`
 import {z, defineCollection} from 'astro:content';
+import {glob} from 'astro/loaders';
 
-// 2. Define your collection(s)
+// Entry ids come from the file names, slugified the same way Astro 4's `slug` was, so URLs stay
+// the same (e.g. "🌞 Hello World.md" -> "-hello-world"). Only top-level .md files are entries:
+// the blog's _templates/ folder and the products' images/ folder are skipped.
+
+// The blog is the git submodule src/content/blog, written in Obsidian.
 const blogCollection = defineCollection({
+    loader: glob({pattern: '*.md', base: './src/content/blog'}),
     schema: ({image}) => z.object({
         title: z.string(),
         description: z.string(),
@@ -22,25 +27,15 @@ const blogCollection = defineCollection({
     }),
 });
 
-const teamCollection = defineCollection({
-    schema: z.object({
-        name: z.string(),
-        title: z.string(),
-        email: z.string(),
-        picture: z.string(),
-        www: z.string().optional(),
-    }),
-});
-
 // Shop products, edited through the CMS at cms.robocza.org and stored in the
 // grupa-robocza/grupa-content repository; the "Sync content" workflow copies them here.
 // Don't edit them here: the next sync overwrites them. Keep the fields in sync with the CMS
-// config (grupa-robocza/grupa-cms, public/config.yml). Entry slug comes from the file name.
-// Description is the Markdown body. Images live in `products/images/`.
+// config (grupa-robocza/grupa-cms, public/config.yml). Entry id (the URL slug) comes from the
+// file name. Description is the Markdown body. Images live in `products/images/`.
 // Prices are in PLN grosze (4900 = 49,00 zł); the checkout function reads them from here,
 // never from the browser.
 const productsCollection = defineCollection({
-    type: 'content',
+    loader: glob({pattern: '*.md', base: './src/content/products'}),
     schema: ({image}) => z.object({
         // Length limits match the CMS config (grupa-cms, public/config.yml). Checkout sends the
         // name, variant label, SKU and slug to Stripe as metadata, which allows 500 characters.
@@ -71,6 +66,28 @@ const productsCollection = defineCollection({
             available: z.boolean().default(true),
         })).min(1),
     }).superRefine((product, context) => {
+        // image() leaves a file Astro can't process (e.g. .jfif, .heic) as its path instead of
+        // failing, which would break the product page and its link preview. While the schema
+        // runs, image() values are still strings (placeholders for supported formats), so check
+        // the extension. Formats: VALID_INPUT_FORMATS in astro/dist/assets/consts.js.
+        const supportedImage = /\.(jpe?g|png|webp|avif|gif|tiff|svg)$/i;
+        const unsupportedImage = (image: unknown) => typeof image === 'string' && !supportedImage.test(image)
+            ? `Unsupported image format: "${image.replace(/^__ASTRO_IMAGE_/, '')}". Use .jpg, .png, .webp, .avif or .gif.`
+            : undefined;
+
+        product.images.forEach((image, index) => {
+            const message = unsupportedImage(image.src);
+            if (message) {
+                context.addIssue({code: z.ZodIssueCode.custom, path: ['images', index, 'src'], message});
+            }
+        });
+        product.variants.forEach((variant, index) => {
+            const message = unsupportedImage(variant.image);
+            if (message) {
+                context.addIssue({code: z.ZodIssueCode.custom, path: ['variants', index, 'image'], message});
+            }
+        });
+
         const skus = new Set<string>();
 
         product.variants.forEach((variant, index) => {
@@ -82,10 +99,9 @@ const productsCollection = defineCollection({
     }),
 });
 
-// 3. Export a single `collections` object to register your collection(s)
-//    This key should match your collection directory name in "src/content"
+// The team pages (src/content/team, src/content/en/team) aren't a collection: Team.astro
+// imports them directly.
 export const collections = {
     'blog': blogCollection,
-    'team': teamCollection,
     'products': productsCollection,
 };

@@ -29,7 +29,7 @@ const locale = Astro.currentLocale;
                     const available = isAvailable(product);
 
                     return (
-                        <a href={`/sklep/${product.slug}`} class="group mb-6 md:mb-12">
+                        <a href={`/sklep/${product.id}`} class="group mb-6 md:mb-12">
                             <div class="relative">
                                 <Image class:list={["border-2 border-black aspect-square object-cover w-full", {"opacity-50": !available}]} src={cover.src} alt={cover.alt} width="600" optimize />
                                 {!available && (

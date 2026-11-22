@@ -7,7 +7,7 @@ export const getStaticPaths = (async () => {
     const products = await getActiveProducts();
 
     return products.map(product => ({
-        params: {slug: product.slug}, props: {product},
+        params: {slug: product.id}, props: {product},
     }));
 }) satisfies GetStaticPaths;
 
