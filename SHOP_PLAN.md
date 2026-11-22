@@ -73,7 +73,7 @@ Context for adding a small shop to this Astro site. These decisions were made in
 
 ## Open questions
 
-- Answered: Gitea is https://git.robocza.org (1.25.3); Astro 4.16.6; shipping is pickup 0 zł / Paczkomat 18 zł / courier 20 zł, no free-shipping threshold.
+- Answered: Gitea is https://git.robocza.org (1.25.3 then, 28.4.0 as of 2026-11-22); Astro 4.16.6 then (Astro 7 since 2026-11-22, see "Dependency upgrade" below); shipping is pickup 0 zł / Paczkomat 18 zł / courier 20 zł, no free-shipping threshold.
 - Order notifications: to be designed in a separate repository (2026-10-18). Decided so far: emails from and to `sklep@robocza.org`; no email to the customer for now, Stripe's receipt is the confirmation (2026-10-25, the owner makes sure it has everything needed); our own customer email will be added later; robocza.org is already verified in MailerSend.
 - Netlify production branch: `main` (answered).
 - Hosting: stay on Netlify with the public GitHub mirror for now; options for a private repository or self-hosting are in `HOSTING_PLAN.md` (2026-10-20).
@@ -97,8 +97,8 @@ https://deploy-preview-6--fastidious-moxie-126f16.netlify.app).
 
 | Step | Status | Where |
 |---|---|---|
-| 1. Inspect repo | Done | Astro 4 legacy content collections (`src/content/config.ts`), Tailwind |
-| 2. Products collection | Done | `src/content/config.ts`, `src/content/products/` (+ `images/`) |
+| 1. Inspect repo | Done | Astro 4 legacy content collections (now content layer, `src/content.config.ts`), Tailwind |
+| 2. Products collection | Done | `src/content.config.ts`, `src/content/products/` (+ `images/`) |
 | 3. Sveltia CMS | Done; Gitea backend, branch `feature/shop` until merge | `public/admin/` |
 | 4. Listing + product pages | Done | `src/pages/sklep.astro`, `src/pages/sklep/[slug].astro`, `src/lib/shop.ts` |
 | 5. Cart | Done | `src/lib/cart.ts`, `src/pages/sklep/koszyk.astro`, `/sklep/katalog.json` |
@@ -110,15 +110,16 @@ https://deploy-preview-6--fastidious-moxie-126f16.netlify.app).
 Decisions made along the way:
 
 - Only shop images are optimised (custom service `src/lib/image-service.ts`, opt-in via `optimize`). Sharp/WebP visibly ruins the blog's dithered images, so they are served as is. Netlify Image CDN is disabled for the same reason.
-- Netlify adapter `@astrojs/netlify` 5.x (Astro 4), `output: "hybrid"`: pages are static, only `/api/checkout` and `/sklep/dziekujemy` run on demand.
+- Netlify adapter `@astrojs/netlify` 8.x (Astro 7; was 5.x with `output: "hybrid"` on Astro 4), default static output: pages are static, only `/api/checkout` and `/sklep/dziekujemy` (`prerender = false`) run on demand.
 - Components rendered on demand must not import `astro.config.mjs` (crashes the function); locales live in `src/i18n.mjs`.
 - Shop is Polish only and not linked from the homepage/nav (owner's choice for now).
 - Max 10 pcs per cart line (`MAX_QUANTITY` in `src/lib/cart.ts`). SKUs must be unique across products (build fails otherwise).
-- Sveltia: stock photos and URL input disabled (Astro `image()` needs files in the repo); empty optional fields omitted.
+- Sveltia: stock photos and URL input disabled (Astro `image()` needs files in the repo); empty optional fields omitted. Image fields only accept `.jpg, .jpeg, .png, .webp, .avif, .gif`: Astro can't process other formats (e.g. `.jfif`, `.heic`), and the products schema fails the build with a clear message if one gets in.
 
 Local dev:
 
-- Node runs in the docker container: `docker compose exec --user 1000:1000 -w /app node npx astro dev --host 0.0.0.0 --port 4321`.
+- Node 26 and npm run in the docker container; `just build-dev` starts the dev server (`npm run dev` inside the container). The image pins Deno 2.9.5 for the Netlify adapter's dev server (see the Dockerfile comment).
+- In dev, the adapter's Image CDN emulation is off (`devFeatures: {images: false}`): it fetches originals over plain HTTP, which fails on the HTTPS dev server.
 - HTTPS via self-signed cert (`just dev-cert`, gitignored in `.docker/certs/`).
 - Site at https://gr.local (port 443 via gitignored `docker-compose.override.yml`). The InPost token is bound to domains without a port, so `gr.local:4321` gets "Brak dostępu".
 - Env vars in `.env`: `PUBLIC_INPOST_GEOWIDGET_TOKEN`, `STRIPE_SECRET_KEY` (test mode). Same on Netlify.
@@ -167,5 +168,16 @@ Goal: editors never get access to this repo, and editing stays easy.
 - Bot account `content-sync`: org team with Code Read + Actions Write on grupa-www and Code Read on grupa-content. One token (`write:repository`) in grupa-content's webhook Authorization header and as the Actions secret `CONTENT_SYNC_TOKEN` here. Pushing uses the built-in Actions token. Nothing runs in grupa-content, so editors can't run code with these credentials.
 - `src/content/products/` stays tracked here but is owned by the sync; don't edit it by hand.
 - `public/admin/` is removed here. OAuth app redirect URI becomes `https://cms.robocza.org/`; Gitea CORS `https://cms.robocza.org`.
-- The Zod schema (here) and `config.yml` (grupa-cms) must be kept in sync by hand.
+- The Zod schema (here, `src/content.config.ts`) and `config.yml` (grupa-cms) must be kept in sync by hand.
+- Sveltia is pinned in grupa-cms (0.270.1 since 2026-11-22). Versions before ~0.270 took Gitea 28.x for Forgejo and failed after sign-in with "There was an error while loading site data"; after a Gitea upgrade, check the CMS still loads.
 - Webhooks and order emails will live in another repository (to be discussed).
+
+## Dependency upgrade (2026-11-22)
+
+Everything was upgraded to the latest versions, one step per commit: Node 26 (Docker, `.node-version`, `engines`), Yarn → npm, Make → `just`, Tailwind 3 → 4 (config in `src/styles/global.css`), Astro 4 → 5 → 7 with `@astrojs/netlify` 8, sharp 0.35, TypeScript 6. URLs and the rendered pages stayed the same (checked with screenshots and the built file list). Things that matter for the shop:
+
+- Entry ids replace `slug`: product URLs still come from the file names.
+- `compressHTML: true` keeps Astro 6's whitespace handling; Astro 7's default dropped spaces between inline elements.
+- Astro 6+ never upscales images, so a variant larger than the source image comes out at the source's size.
+- TypeScript 7 is held back: Astro's editor plugin and `astro check` don't support it yet. `tsconfig.json` is ready for it.
+- To do: check checkout on a Netlify deploy (tested locally with the built function and Stripe test mode only).
