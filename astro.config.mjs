@@ -14,6 +14,9 @@ const devHttps = fs.existsSync(devCert.key) && fs.existsSync(devCert.cert)
 // https://astro.build/config
 export default defineConfig({
     site: "https://grupa.robocza.org",
+    // HTML-aware whitespace compression, the default before Astro 7. Astro 7's default ('jsx')
+    // drops the whitespace between elements, which the templates rely on (e.g. "by Janota").
+    compressHTML: true,
     // Pages are static (the default output); only routes with `prerender = false` (checkout API,
     // order confirmation) run on demand as a Netlify Function.
     adapter: netlify({

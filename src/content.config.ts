@@ -70,7 +70,7 @@ const productsCollection = defineCollection({
         // failing, which would break the product page and its link preview. While the schema
         // runs, image() values are still strings (placeholders for supported formats), so check
         // the extension. Formats: VALID_INPUT_FORMATS in astro/dist/assets/consts.js.
-        const supportedImage = /\.(jpe?g|png|webp|avif|gif|tiff|svg)$/i;
+        const supportedImage = /\.(jpe?g|png|apng|webp|avif|gif|tiff|svg)$/i;
         const unsupportedImage = (image: unknown) => typeof image === 'string' && !supportedImage.test(image)
             ? `Unsupported image format: "${image.replace(/^__ASTRO_IMAGE_/, '')}". Use .jpg, .png, .webp, .avif or .gif.`
             : undefined;
