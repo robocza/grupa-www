@@ -1,22 +1,22 @@
 Start docker containers
 
 ```bash
-docker compose build
-docker compose up -d
+just docker-build
+just docker-up
 ```
 
 Get into docker
 
 ```bash
-docker exec -it --user 1000:1000 grupa-www-node fish
+just sh
 ```
 
 Install dependencies
 ```bash
-yarn install
+npm install
 ```
 
 Run project (inside docker)
 ```bash
-yarn dev
+npm run dev
 ```

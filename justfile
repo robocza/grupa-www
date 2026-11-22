@@ -105,9 +105,9 @@ dev-cert:
 # Run the dev server (inside the node container)
 [group('build')]
 build-dev:
-    yarn dev
+    npm run dev
 
 # Build the site (inside the node container)
 [group('build')]
 build:
-    yarn build
+    npm run build

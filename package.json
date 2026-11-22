@@ -25,6 +25,10 @@
     "@tailwindcss/typography": "^0.5.15"
   },
   "engines": {
-    "node": "^24.13.1"
+    "node": "^26.13.1"
+  },
+  "allowScripts": {
+    "esbuild": true,
+    "sharp": true
   }
 }
