@@ -3332,10 +3332,10 @@ strip-bom@^3.0.0:
   resolved "https://registry.npmjs.org/strip-bom/-/strip-bom-3.0.0.tgz"
   integrity sha512-vavAMRXOgBVNF6nyEEmL3DBK19iRpDcoIwW+swQ+CbGiu7lju6t+JklA1MHweoWtadgt4ISVUsXLyDq34ddcwA==
 
-stripe@^22.6.2:
-  version "22.6.2"
-  resolved "https://registry.yarnpkg.com/stripe/-/stripe-22.6.2.tgz#e2acadf999b88a277e2c555d9008ac029b4f91e9"
-  integrity sha512-PwRE2scocvXqDKPiskMa5vRJEAEkq46W69XyUYmAwrNSLr675lQnfqLwnsndAWizwgihOWw/irLmoFRo3ez7ew==
+stripe@^23.2.0:
+  version "23.2.0"
+  resolved "https://registry.yarnpkg.com/stripe/-/stripe-23.2.0.tgz#886c3833d9287940dd7ddb0b2e5c84426c9455e9"
+  integrity sha512-0W0J4yA9qFO2rnF61v8Y62OiO2SmAR+Cv04VJaFUMpCxiq8lG5bxEYbeSMSpMDR9ofFZGd+Z/iUIgSFbOolmUw==
 
 sucrase@^3.32.0:
   version "3.35.0"

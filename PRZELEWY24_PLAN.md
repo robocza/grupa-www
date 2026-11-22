@@ -1,7 +1,7 @@
 # Przelewy24 — plan
 
 Przelewy24 (P24) was paused on 2026-10-20: checkout offers cards and BLIK only
-(`payment_method_types` in `src/pages/api/checkout.ts`). This plan collects what's needed to
+(`allowed_payment_method_types` in `src/pages/api/checkout.ts`). This plan collects what's needed to
 turn it back on.
 
 ## Why it's paused
@@ -59,7 +59,7 @@ Not specific to P24, but relevant for the shop as a whole:
 
 1. Make the website changes above and check the MCC in Stripe.
 2. Activate P24 in Stripe **live** mode (Settings → Payment methods).
-3. Add `'p24'` back to `payment_method_types` in `src/pages/api/checkout.ts`.
+3. Add `'p24'` back to `allowed_payment_method_types` in `src/pages/api/checkout.ts`.
 4. Test a P24 payment in the sandbox. P24 sessions can complete before the payment is confirmed;
    the confirmation page already handles that ("płatność jest jeszcze przetwarzana"). The order
    emails, once built, must wait for `checkout.session.async_payment_succeeded`.

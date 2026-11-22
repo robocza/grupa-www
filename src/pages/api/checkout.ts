@@ -68,8 +68,9 @@ export const POST: APIRoute = async ({request}) => {
             mode: 'payment',
             locale: 'pl',
             currency: 'pln',
-            // Przelewy24 is paused until the website meets its requirements (PRZELEWY24_PLAN.md).
-            payment_method_types: ['card', 'blik'],
+            // Offered from the payment methods enabled in the Stripe Dashboard, limited to these. Przelewy24 is paused
+            // until the website meets its requirements (PRZELEWY24_PLAN.md).
+            allowed_payment_method_types: ['card', 'blik'],
             // The admin panel maps order lines by SKU and product slug, never by name. It names
             // products from product_name and variants from the line's description, which is
             // product_data.name: "Name — Label", or just the name for a single-variant product.
